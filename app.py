@@ -10,7 +10,7 @@ app = Flask(__name__)
 # A chave secreta será lida de uma Váriavel de Ambiente no Render
 app.secret_key = os.environ.get('SECRET_KEY', 'uma-chave-padrao-para-testes-locais')
 # A senha de acesso será lida de uma variável de ambiente também
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'senha123')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin_test_2')
 
 
 # --- Decorator de Login ---
