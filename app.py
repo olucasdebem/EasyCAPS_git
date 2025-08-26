@@ -1,12 +1,50 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, redirect, url_for, session
 import os
 import itertools
-from itertools import product
-from itertools import combinations
+from itertools import product, combinations
 import re
 from waitress import serve
+from functools import wraps
 
 app = Flask(__name__)
+# A chave secreta será lida de uma Váriavel de Ambiente no Render
+app.secret_key = os.environ.get('SECRET_KEY', 'uma-chave-padrao-para-testes-locais')
+# A senha de acesso será lida de uma variável de ambiente também
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'senha123')
+
+
+# --- Decorator de Login ---
+# Esta função verifica se o usuário está logado antes de acessar uma página
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# --- Rota de Login ---
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['password'] == ADMIN_PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('index')) # Redireciona para a página principal após login
+        else:
+            error = 'Senha inválida. Tente novamente.'
+    return render_template('login.html', error=error)
+
+# --- Rota de Logout ---
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
+
+
+
+
 '''
 enzymes = {
     'AatII': ['GACGTC', 1, 5, 'p'],
@@ -1649,11 +1687,13 @@ def generate_double_degenerate_enzymes(enzymes_dict):
 
 
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html', enzymes=enzymes)
 
 
 @app.route('/results', methods=['POST'])
+@login_required
 def results():
     try:
         #TRATANDO AS ENZIMAS ====================================================
@@ -1841,7 +1881,7 @@ def results():
         gRNA_input_string = request.form.get('gRNAs', 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA').upper().replace(" ", "")
         # Validação
         if not re.fullmatch(r"[ATCG,]+", gRNA_input_string):
-            return jsonify({"error": "Sequence 1 must contain only A, T, C or G."}), 400
+            return jsonify({"error": "gRNAs must contain only A, T, C or G."}), 400
         if len(gRNA_input_string) > 220:
             return jsonify({"error": "Too much sequences. Max = 10."}), 400
 
