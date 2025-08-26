@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados da Análise</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .title{
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .result-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .sequence {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            word-break: break-all
+        }
+        .protein {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .enzyme {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e8f4fc;
+            border-radius: 4px;
+        }
+        .section-title {
+            color: #3498db;
+            margin-top: 0;
+        }
+
+        .result-section .section-title {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .enzyme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .enzyme-item {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px; /* Cantos arredondados */
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra subtil */
+            transition: transform 0.2s ease-in-out; /* Animação suave */
+        }
+
+        .enzyme {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+            font-size: 0.95rem;
+        }
+        .results-container {
+            font-family: monospace;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            word-break: break-all
+        }
+
+        /* Estilo de cada "card" de resultado */
+        .result-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px; /* Espaço entre os cards */
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Estilo para parágrafos dentro do card */
+        .result-card p {
+            margin: 0 0 8px 0; /* Espaçamento entre as linhas de informação */
+        }
+
+        /* Estilo específico para a sequência de DNA */
+        .sequence-text {
+            font-family: monospace;
+            font-size: 0.9em;
+            word-break: break-all; /* Quebra a linha da sequência se for muito longa */
+            background-color: #ffffff;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 class="title">EasyCAPS Finder: Results</h1>
+    
+    <div class="result-section">
+        <h2 class="section-title">DNA Sequence 1:</h2>
+
+        <div class="sequence"><strong>Input Seq 1:</strong> {{ input_seq_1_h|safe }}</div>
+        <div class="sequence"><strong>Input Seq 1 Rev-Comp:</strong> {{ input_seq_1_rc_h|safe }}</div>
+        <div class="sequence"><strong>Protein 1:</strong> {{ protein_1_h|safe }}</div>
+
+        <!--
+        <div class="sequence">First SNP left Input Seq: {{ snp_left_s1 }} {{bl1}}</div>
+        <div class="sequence">Seq 1 around left: {{ seq_1_l }}</div>
+        <div class="sequence">Seq 1 around left Rev-Comp: {{ seq_1_l_rc }}</div>
+        <div class="sequence">First SNP left around: {{ snp_l_s1 }} {{bl1}}</div>
+        <div class="sequence">Protein 1 around left: {{ protein_1l }}</div>
+        -->
+    </div>
+    
+    <div class="result-section">
+        <h2 class="section-title">DNA Sequence 2:</h2>
+
+        <div class="sequence"><strong>Input Seq 2:</strong> {{ input_seq_2_h|safe }}</div>
+        <div class="sequence"><strong>Seq 2 Rev-Comp:</strong> {{ input_seq_2_rc_h|safe }}</div>
+        <div class="sequence"><strong>Protein 2:</strong> {{ protein_2_h|safe }}</div>
+
+        <!--
+        <div class="sequence">First SNP left: {{ snp_left_s2 }} {{bl2}}</div>
+        <div class="sequence">Seq 2 around left: {{ seq_2_l }}</div>
+        <div class="sequence">Seq 2 around left Rev-Comp: {{ seq_2_l_rc }}</div>
+        <div class="sequence">First SNP left around: {{ snp_l_s2 }} {{bl2}}</div>
+        <div class="sequence">Protein 2 around left: {{ protein_2l }}</div>
+        -->
+    </div>
+    
+   {% if selected_enzymes %}
+    <div class="result-section">
+        <h2 class="section-title">Selected Enzymes:</h2>
+        
+        <!-- O seu CSS .enzyme-grid é aplicado a este div -->
+        <div class="enzyme-grid">
+            
+            <!-- O loop agora cria um div para cada enzima -->
+            {% for name, details in selected_enzymes.items() %}
+                <!-- Cada um destes divs será um item na sua grelha de colunas -->
+                <div class="enzyme-item">
+                    <i>{{ name }}</i>: {{ details[0] }}
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+{% endif %}
+            <!--
+            <div class="enzyme">
+                <strong>Enzimas palindrômicas:</strong>
+                <ul>
+                    {% for name, details in selected_enzymes_p.items() %}
+                        <li>{{ name }}: {{ details[0] }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="enzyme">
+                <strong>Enzimas não-palindrômicas:</strong>
+                <ul>
+                    {% for name, details in selected_enzymes_np.items() %}
+                        <li>{{ name }}: {{ details[0] }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            -->
+
+    <div class="result-section">
+        <h2 class="section-title">CAPS and dCAPS Seq 1</h2>
+        <!--
+        <div class="sequence"><b>rs_s1_l:</b> {{ rs_s1_l }}</div>
+        <div class="sequence"><b>rs_s1_l_rc:</b> {{ rs_s1_l_rc }}</div>
+
+        <div class="sequence"><b>rs_filtered_l_s1:</b> {{ rs_filtered_l_s1 }}</div>
+        <div class="sequence"><b>unique_rs_l_s1:</b> {{ unique_rs_l_s1 }}</div>
+        <div class="sequence"><b>natural_rs_s1_l:</b> {{ natural_rs_s1_l }}</div>
+        <div class="sequence"><b>natural_rs_s1_l_final:</b> {{ natural_rs_s1_l_final }}</div>
+        -->
+        <div class="results-container"><b>CAPs Seq 1:</b>
+        {% if natural_rs_s1_l_final %} {% for item in natural_rs_s1_l_final %}
+             <div class="result-card">
+                <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> - Position: {{ item[2] }} - {{ item[3] }}</li>
+             </div>
+             {% endfor %}
+        {% else %}
+            <p class="result-card">There is no CAPS for Seq 1</p>
+        {% endif %}
+        </div>
+        <!--
+        <div class="sequence"><b>primers_l_s1:</b> {{ primers_l_s1 }}</div>
+        <div class="sequence"><b>validated_primers_l_s1:</b> {{ validated_primers_l_s1 }}</div>
+        <div class="sequence"><b>lista_final_l_s1:</b> {{ lista_final_l_s1 }}</div>
+       
+        <div class="sequence"><b>rs_filtered_l_s1_rc:</b> {{ rs_filtered_l_s1_rc }}</div>
+        <div class="sequence"><b>unique_rs_l_s1_rc:</b> {{ unique_rs_l_s1_rc }}</div>
+        <div class="sequence"><b>natural_rs_s1_l_rc:</b> {{ natural_rs_s1_l_rc }}</div>
+        <div class="sequence"><b>primers_l_s1_rc:</b> {{ primers_l_s1_rc }}</div>
+        <div class="sequence"><b>validated_primers_l_s1_rc:</b> {{ validated_primers_l_s1_rc }}</div>
+        <div class="sequence"><b>lista_final_l_s1_rc:</b> {{ lista_final_l_s1_rc }}</div>
+        <div class="sequence"><b>lista_final_final_l_s1:</b> {{ lista_final_final_l_s1|safe }}</div>
+        -->
+        <div class="results-container">
+            <b>dCAPs Seq 1:</b>
+            <div class="sequence"><strong>Max-mismatches:</strong> {{ max_mismatch }}</div>
+            {% if lista_final_final_l_s1 %}  {% for item in lista_final_final_l_s1 %}
+                    <div class="result-card">
+                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[7]|safe }} </li>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="result-card">There is no dCAPS for Seq 1</p>
+            {% endif %}
+        </div>
+        <!--END-->
+    </div>
+
+    <div class="result-section">
+        <h2 class="section-title">CAPS and dCAPS Seq 2</h2>
+        <!--
+        <div class="sequence"><b>rs_s2_l:</b> {{ rs_s2_l }}</div>
+        <div class="sequence"><b>rs_s2_l_rc:</b> {{ rs_s2_l_rc }}</div>
+
+        <div class="sequence"><b>rs_filtered_l_s2:</b> {{ rs_filtered_l_s2 }}</div>
+        <div class="sequence"><b>unique_rs_l_s2:</b> {{ unique_rs_l_s2 }}</div>
+        <div class="sequence"><b>natural_rs_s2_l:</b> {{ natural_rs_s2_l }}</div>
+        <div class="sequence"><b>natural_rs_s2_l_final:</b> {{ natural_rs_s2_l_final }}</div>
+        -->
+        <div class="results-container"><b>CAPs Seq 2:</b>
+        {% if natural_rs_s2_l_final %} {% for item in natural_rs_s2_l_final %}
+             <div class="result-card">
+                <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[4] }} </li>
+             </div>
+             {% endfor %}
+        {% else %}
+            <p class="result-card">There is no CAPS for Seq 2</p>
+        {% endif %}
+        </div>
+        <!--
+        <div class="sequence"><b>primers_l_s2:</b> {{ primers_l_s2 }}</div>
+        <div class="sequence"><b>validated_primers_l_s2:</b> {{ validated_primers_l_s2 }}</div>
+        <div class="sequence"><b>lista_final_l_s2:</b> {{ lista_final_l_s2 }}</div>
+        
+        <div class="sequence"><b>rs_filtered_l_s2_rc:</b> {{ rs_filtered_l_s2_rc }}</div>
+        <div class="sequence"><b>unique_rs_l_s2_rc:</b> {{ unique_rs_l_s2_rc }}</div>
+        <div class="sequence"><b>natural_rs_s2_l_rc:</b> {{ natural_rs_s2_l_rc }}</div>
+        <div class="sequence"><b>primers_l_s2_rc:</b> {{ primers_l_s2_rc }}</div>
+        <div class="sequence"><b>validated_primers_l_s2_rc:</b> {{ validated_primers_l_s2_rc }}</div>
+        <div class="sequence"><b>lista_final_l_s2_rc:</b> {{ lista_final_l_s2_rc }}</div>
+        <div class="sequence"><b>lista_final_final_l_s2:</b> {{ lista_final_final_l_s2 }}</div>
+        -->
+        <div class="results-container">
+            <b>dCAPs Seq 2:</b>
+            <div class="sequence"><strong>Max-mismatches:</strong> {{ max_mismatch }}</div>
+            {% if lista_final_final_l_s2 %}  {% for item in lista_final_final_l_s2 %}
+                    <div class="result-card">
+                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[7]|safe }} </li>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="result-card">There is no dCAPS for Seq 2</p>
+            {% endif %}
+        </div>
+        <!-- END-->
+    </div>
+
+    <div class="result-section">
+        <h2 class="section-title">Generate CAPS in DNA Donor</h2>
+        <div class="sequence"><b>Organism selected for codon usage:</b> {{ organism_selected }}</div>
+        <!--
+        <div class="sequence"><b>rs_s2_l_1m:</b> {{ rs_s2_l_1m }}</div>
+        <div class="sequence"><b>rs_s2_l_1m_rc:</b> {{ rs_s2_l_1m_rc }}</div>
+        <div class="sequence"><b>grs_s2_l:</b> {{ grs_s2_l }}</div>
+        <div class="sequence"><b>grs_s2_l:</b> {{ grs_s2_l_t }}</div>
+        <div class="sequence"><b>grs_s2_l_rc:</b> {{ grs_s2_l_rc }}</div>
+        <div class="sequence"><b>grs_s2_l_rc_t:</b> {{ grs_s2_l_rc_t }}</div>
+        <div class="sequence"><b>grs_s2_l_final:</b> {{ grs_s2_l_final }}</div>
+        <div class="sequence"><b>grs_s2_l_final_final:</b> {{ grs_s2_l_final_final }}</div>
+        <div class="sequence"><b>grs_s2_l_final_final_cu:</b> {{ grs_s2_l_final_final_cu }}</div>
+        -->
+        
+        <div class="results-container">
+            <b>CAPs in Donor:</b>
+            {% if grs_s2_l_final_final_cu %}  {% for item in grs_s2_l_final_final_cu %}
+                    <div class="result-card">
+                         <li><i><strong>{{ item[0] }}</i>: {{ item[6] }}</strong> - Position: {{ item[3] }} - {{ item[4] }}, Codon usage difference: {{ item[1] }} = {{ item[2] }} <br>Donor:{{ item[5]|safe }}<br> </li>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="result-card">There is no dCAPS for Seq 2</p>
+            {% endif %}
+        </div>
+        <!-- END-->
+    </div>
+
+    <div class="result-section">
+        <h2 class="section-title">Hiding PAM</h2>
+        <!--
+        <div class="sequence"><b>gRNA_input_string:</b> {{ gRNA_input_string }}</div>
+        <div class="sequence"><b>gRNAs:</b> {{ gRNAs }}</div>
+        -->
+        <div class="results-container">
+            <b>gRNAs</b>
+            {% if gRNAs %}  {% for item in gRNAs %}
+                    <ul>
+                         <li>{{ item }}</li>
+                    </ul>
+                {% endfor %}
+            {% else %}
+                <p class="result-card">No gRNAs Input</p>
+            {% endif %}
+        </div>
+        <div class="sequence"><b>PAM:</b> 20bp-NGG </div>
+        <div class="sequence"><b>Organism selected for codon usage:</b> {{ organism_selected }}</div>
+        <!--
+        <div class="sequence"><b>p_s1_l:</b> {{ p_s1_l }}</div>
+        <div class="sequence"><b>hp_s1_l:</b> {{ hp_s1_l }}</div>
+        <div class="sequence"><b>hp_s1_l_filter:</b> {{ hp_s1_l_filter }}</div>
+        <div class="sequence"><b>hp_s1_l_filter_final:</b> {{ hp_s1_l_filter_final }}</div>
+        <div class="sequence"><b>hp_s1_l_filter_final_cu:</b> {{ hp_s1_l_filter_final_cu }}</div>
+        -->
+        
+        <div class="results-container">
+            <b>Generate Donor without PAM</b>
+
+            {% if hp_s1_l_filter_final_cu %}
+                {% for gRNA, results_list in hp_s1_l_filter_final_cu.items() %}
+
+                    {% for result in results_list %}
+                        <div class="result-card">
+                            <p>
+                                <strong>gRNA:</strong> {{ gRNA }}
+                            </p>
+                            <p>
+                                <strong>Codon change:</strong> {{ result['changes'][0] }}
+                            </p>
+                                <strong>DNA Donor without PAM:</strong>{{ result['dna']|safe }}
+                        </div>
+                    {% endfor %}
+
+                {% endfor %}
+            {% else %}
+                <p class="result-card">Nenhum resultado para exibir.</p>
+            {% endif %}
+        </div>
+    </div>
+
+        {% if right_snp %}
+            <div class="result-section">
+                <h2 class="section-title">There is another SNP downstream!</h2>
+            <!--
+            <div class="sequence">First SNP Right: {{ snp_right_s1 }} {{ br1 }}</div>
+            <div class="sequence">Seq 1 around right: {{ seq_1_r }}</div>
+            <div class="sequence">Seq 1 around right Rev-Comp: {{ seq_1_r_rc }}</div>
+            <div class="sequence">First SNP Right Around: {{ snp_r_s1 }} {{ br1 }}</div>
+            <div class="sequence">Protein 1 around right: {{ protein_1r }}</div>
+
+            <div class="sequence">First SNP Right: {{ snp_right_s2 }} {{ br2 }}</div>
+            <div class="sequence">Seq 2 around right: {{ seq_2_r }}</div>
+            <div class="sequence">Seq 2 around right Rev-Comp: {{ seq_2_r_rc }}</div>
+            <div class="sequence">First SNP Right Around: {{ snp_r_s2 }} {{ br2 }}</div>
+            <div class="sequence">Protein 2 around right: {{ protein_2r }}</div>
+
+            <h2 class="section-title">Restriction Sites Seq 1 Right</h2>
+        
+            <div class="sequence"><b>rs_s1_r:</b> {{ rs_s1_r }}</div>
+            <div class="sequence"><b>rs_s1_r_rc:</b> {{ rs_s1_r_rc }}</div>
+
+            <div class="sequence"><b>rs_filtered_r_s1:</b> {{ rs_filtered_r_s1 }}</div>
+            <div class="sequence"><b>unique_rs_r_s1:</b> {{ unique_rs_r_s1 }}</div>
+            <div class="sequence"><b>primers_r_s1:</b> {{ primers_r_s1 }}</div>
+            <div class="sequence"><b>validated_primers_r_s1:</b> {{ validated_primers_r_s1 }}</div>
+            <div class="sequence"><b>lista_final_r_s1:</b> {{ lista_final_r_s1 }}</div>
+           
+            <div class="sequence"><b>rs_filtered_r_s1_rc:</b> {{ rs_filtered_r_s1_rc }}</div>
+            <div class="sequence"><b>unique_rs_r_s1_rc:</b> {{ unique_rs_r_s1_rc }}</div>
+            <div class="sequence"><b>primers_r_s1_rc:</b> {{ primers_r_s1_rc }}</div>
+            <div class="sequence"><b>validated_primers_r_s1_rc:</b> {{ validated_primers_r_s1_rc }}</div>
+            <div class="sequence"><b>lista_final_r_s1_rc:</b> {{ lista_final_r_s1_rc }}</div>
+            
+            <div class="sequence"><b>lista_final_final_r_s1:</b> {{ lista_final_final_r_s1 }}</div>
+            
+
+
+            <h2 class="section-title">Restriction Sites Seq 2 Right</h2>
+
+            <div class="sequence"><b>rs_s2_r:</b> {{ rs_s2_r }}</div>
+            <div class="sequence"><b>rs_s2_r_rc:</b> {{ rs_s2_r_rc }}</div>
+
+            <div class="sequence"><b>rs_filtered_r_s2:</b> {{ rs_filtered_r_s2 }}</div>
+            <div class="sequence"><b>unique_rs_r_s2:</b> {{ unique_rs_r_s2 }}</div>
+            <div class="sequence"><b>primers_r_s2:</b> {{ primers_r_s2 }}</div>
+            <div class="sequence"><b>validated_primers_r_s2:</b> {{ validated_primers_r_s2 }}</div>
+            <div class="sequence"><b>lista_final_r_s2:</b> {{ lista_final_r_s2 }}</div>
+            
+            <div class="sequence"><b>rs_filtered_r_s2_rc:</b> {{ rs_filtered_r_s2_rc }}</div>
+            <div class="sequence"><b>unique_rs_r_s2_rc:</b> {{ unique_rs_r_s2_rc }}</div>
+            <div class="sequence"><b>primers_r_s2_rc:</b> {{ primers_r_s2_rc }}</div>
+            <div class="sequence"><b>validated_primers_r_s2_rc:</b> {{ validated_primers_r_s2_rc }}</div>
+            <div class="sequence"><b>lista_final_r_s2_rc:</b> {{ lista_final_r_s2_rc }}</div>
+            
+            <div class="sequence"><b>lista_final_final_r_s2:</b> {{ lista_final_final_r_s2 }}</div>
+            END-->
+        {% endif %}
+    </div>
+
+
+    
+    <a href="/" style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">Nova Análise</a>
+</body>
+</html>

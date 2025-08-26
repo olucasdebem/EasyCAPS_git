@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyCAPS Finder</title>
+   <style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 25px;
+        line-height: 1.6;
+        color: #333;
+    }
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .dna-form {
+        background-color: #f9f9f9;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .sequence-group {
+        margin-bottom: 25px;
+    }
+    .input_seq {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        min-height: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        resize: vertical;
+    }
+     textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        min-height: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        resize: vertical;
+    }
+    .enzyme-group {
+        margin: 25px 0;
+        padding: 20px;
+        background-color: #f0f7ff;
+        border-radius: 8px;
+        border: 1px solid #d0e3ff;
+    }
+    .enzyme-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 12px;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+    .enzyme-option {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 10px 15px;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
+    .enzyme-option:hover {
+        background-color: #f5faff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .enzyme-option input[type="checkbox"] {
+        margin-right: 12px;
+        transform: scale(1.2);
+    }
+    .enzyme-option label {
+        cursor: pointer;
+        font-size: 14px;
+        flex-grow: 1;
+    }
+    .enzyme-group h3 {
+        margin-top: 0;
+        color: #2c3e50;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #d0e3ff;
+    }
+    button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        margin: 25px auto 0;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    option {
+      font-style: italic;
+    }
+    .example {
+        font-size: 13px;
+        color: #7f8c8d;
+        margin-top: 8px;
+        font-style: italic;
+    }
+    /* Scrollbar styling for enzyme options */
+    .enzyme-options::-webkit-scrollbar {
+        width: 8px;
+    }
+    .enzyme-options::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .enzyme-options::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+    .enzyme-options::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .enzyme-options {
+            grid-template-columns: 1fr;
+        }
+        body {
+            padding: 15px;
+        }
+        .dna-form {
+            padding: 15px;
+        }
+    }
+     .search-container {
+        margin-bottom: 20px;
+        position: relative;
+        width: 95%;
+    }
+    #enzymeSearch {
+        width: 100%;
+        padding: 12px 15px;
+        padding-left: 40px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+    }
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 20px;
+        color: #7f8c8d;
+        font-style: italic;
+    }
+    .highlight {
+        background-color: #fffde7;
+        font-weight: bold;
+        padding: 0 2px;
+    }
+</style>
+</head>
+<body>
+    <h1>EasyCAPS Finder</h1>
+
+<div class="dna-form">
+    <form action="/results" method="post">
+        <!-- Campos de sequência de DNA (mantidos iguais) -->
+        <div class="sequence-group">
+            <label for="input_seq_1">DNA sequence 1:</label><br>
+            <input class="input_seq" id="input_seq_1" name="input_seq_1" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
+        </div>
+        
+        <div class="sequence-group">
+            <label for="input_seq_2">DNA sequence 2:</label><br>
+            <input class="input_seq" id="input_seq_2" name="input_seq_2" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
+        </div>
+        <div>
+            <label for="max_mismatch">Max mismatches</label><br>
+            <select class="input_seq" name="max_mismatch" id="max_mismatch">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
+        <div class="enzyme-group">
+            <h3>Select the restriction enzymes</h3>
+            <div class="search-container">
+                <i class="search-icon">🔍</i>
+                <input type="text" id="enzymeSearch" placeholder="Search enzymes by name or sequence...">
+            </div>
+
+            <!-- Checkbox de selecionar todas -->
+            <div class="enzyme-option">
+                <input type="checkbox" id="selectAllEnzymes">
+                <label for="selectAllEnzymes"><strong>Select all</strong></label>
+            </div>
+
+            <!-- Container das opções reais -->
+            <div class="enzyme-options" id="enzymeOptionsContainer">
+                {% for name, data in enzymes.items() %}
+                <div class="enzyme-option">
+                    <input type="checkbox" id="{{ name.lower() }}" name="enzymes" value="{{ name }}"
+                           {% if name in selected_enzymes %}checked{% endif %}>
+                    <label for="{{ name.lower() }}">{{ name }} ({{ data[0] }}, {{ data[1] }}/{{ data[2] }})</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <label for="organism">Codon usage:</label><br>
+                <select class="input_seq" name="organism" id="organism">
+                    <option value="Yeast">S. cerevisiae</option>
+                    <option value="E. coli">E. coli</option>
+                    <option value="Human">Human</option>
+                </select>
+        </div>
+
+        <div>
+            <label for="organism">PAM pattern</label><br>
+                <select class="input_seq" name="PAM" id="PAM">
+                    <option value="NGG">20bp-NGG</option>
+                </select>
+        </div>
+        <div class="sequence-group">
+            <label for="gRNAs">gRNAs (separated by commas):</label><br>
+            <input class="input_seq" id="gRNAs" name="gRNAs" value="CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA"></input>
+        </div>
+
+        <button type="submit">Analyse</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const enzymeOptionsContainer = document.getElementById('enzymeOptionsContainer');
+    const searchInput = document.getElementById('enzymeSearch');
+    const enzymeOptions = Array.from(enzymeOptionsContainer.querySelectorAll('.enzyme-option'));
+    const enzymeCheckboxes = Array.from(enzymeOptionsContainer.querySelectorAll('input[type="checkbox"]'));
+    const selectAllCheckbox = document.getElementById('selectAllEnzymes');
+
+    // Marcar todos por padrão
+    selectAllCheckbox.checked = true;
+    enzymeCheckboxes.forEach(cb => cb.checked = true);
+
+    // Evento para selecionar/desselecionar todos
+    selectAllCheckbox.addEventListener('change', function() {
+        enzymeCheckboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    // Sincronizar o Select All se algum checkbox individual for alterado
+    enzymeCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            selectAllCheckbox.checked = enzymeCheckboxes.every(c => c.checked);
+        });
+    });
+
+
+    // Função para destacar os termos de busca
+    function highlightText(text, searchTerm) {
+        if (!searchTerm) return text;
+        const regex = new RegExp(searchTerm, 'gi');
+        return text.replace(regex, match => `<span class="highlight">${match}</span>`);
+    }
+
+    // Função de busca/filtro
+    function filterEnzymes(searchTerm) {
+        searchTerm = searchTerm.toLowerCase();
+        let hasResults = false;
+        
+        enzymeOptions.forEach(option => {
+            const label = option.querySelector('label');
+            const originalText = label.dataset.originalText || label.textContent;
+            label.dataset.originalText = originalText; // Guarda o texto original
+            
+            const matches = originalText.toLowerCase().includes(searchTerm);
+            option.style.display = matches ? 'flex' : 'none';
+            
+            if (matches) {
+                hasResults = true;
+                label.innerHTML = highlightText(originalText, searchTerm);
+            }
+        });
+
+        // Mostra mensagem se não encontrar resultados
+        const noResults = document.getElementById('noResultsMessage');
+        if (!hasResults && searchTerm) {
+            if (!noResults) {
+                const msg = document.createElement('div');
+                msg.id = 'noResultsMessage';
+                msg.className = 'no-results';
+                msg.textContent = 'Nenhuma enzima encontrada. Tente outro termo.';
+                enzymeOptionsContainer.appendChild(msg);
+            }
+        } else if (noResults) {
+            noResults.remove();
+        }
+    }
+
+    // Evento de busca
+    searchInput.addEventListener('input', function() {
+        filterEnzymes(this.value);
+    });
+
+    // Focar no campo de busca ao carregar
+    searchInput.focus();
+});
+</script>
+</html>
