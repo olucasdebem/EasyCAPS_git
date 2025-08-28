@@ -1721,8 +1721,8 @@ def results():
         input_seq_2_raw = request.form.get("input_seq_2", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", "")
 
         # LIMPA a entrada para remover qualquer código malicioso
-         input_seq_1 = bleach.clean(input_seq_1_raw)
-         input_seq_2 = bleach.clean(input_seq_2_raw)
+        input_seq_1 = bleach.clean(input_seq_1_raw)
+        input_seq_2 = bleach.clean(input_seq_2_raw)
 
         # Validação
         if not re.fullmatch(r"[ATCG]+", input_seq_1):
