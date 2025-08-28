@@ -5,6 +5,7 @@ from itertools import product, combinations
 import re
 from waitress import serve
 from functools import wraps
+import bleach
 
 app = Flask(__name__)
 # A chave secreta será lida de uma Váriavel de Ambiente no Render
@@ -1716,8 +1717,12 @@ def results():
         organism_selected = request.form.get('organism', 'Yeast')
         codon_usage = codon_usage_tables.get(organism_selected, codon_usage_yeast)
 
-        input_seq_1 = request.form.get("input_seq_1", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", "")
-        input_seq_2 = request.form.get("input_seq_2", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", "")
+        input_seq_1_raw = request.form.get("input_seq_1", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", "")
+        input_seq_2_raw = request.form.get("input_seq_2", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", "")
+
+        # LIMPA a entrada para remover qualquer código malicioso
+         input_seq_1 = bleach.clean(input_seq_1_raw)
+         input_seq_2 = bleach.clean(input_seq_2_raw)
 
         # Validação
         if not re.fullmatch(r"[ATCG]+", input_seq_1):
