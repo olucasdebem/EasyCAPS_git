@@ -315,6 +315,8 @@ enzymes = {
     'XhoI': ['CTCGAG', 1, 5, 'p']
     }
 
+ENZIMAS_VALIDAS = set(enzymes.keys())
+
 # Tabela de códons
 codon_table = {
     'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
@@ -392,6 +394,11 @@ codon_usage_tables = {
     'E. coli': codon_usage_ecoli,
     'Yeast': codon_usage_yeast
 }
+
+VALID_MISMATCHES = {"1", "2", "3"}
+VALID_ORGANISMS = {"Yeast", "E. coli", "Human"}
+VALID_PAMS = {"NGG"}
+
 '''
 # https://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=4932
 codon_usage = {
@@ -1700,6 +1707,8 @@ def results():
         #TRATANDO AS ENZIMAS ====================================================
         # Obter enzimas selecionadas em forma de lista
         selected_enzymes_list = request.form.getlist('enzymes')
+        if not set(selected_enzymes_list).issubset(ENZIMAS_VALIDAS):
+            return "Erro: Uma ou mais enzimas selecionadas são inválidas.", 400
 
         # Preparar informações das enzimas selecionadas (usando a nova estrutura)
         enzymes_info = []
@@ -1715,6 +1724,9 @@ def results():
 
         # Recuperar a escolha do organismo
         organism_selected = request.form.get('organism', 'Yeast')
+        if organism_selected not in VALID_ORGANISMS:
+            return "Erro: Valor de mismatch inválido.", 400
+
         codon_usage = codon_usage_tables.get(organism_selected, codon_usage_yeast)
 
         input_seq_1_raw = request.form.get("input_seq_1", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", "")
@@ -1727,12 +1739,12 @@ def results():
         # Validação
         if not re.fullmatch(r"[ATCG]+", input_seq_1):
             return jsonify({"error": "Sequence 1 must contain only A, T, C or G."}), 400
-        if len(input_seq_1) > 100:
+        if len(input_seq_1) > 200:
             return jsonify({"error": "Sequence 1 is too long. Max = 100bp."}), 400
 
         if not re.fullmatch(r"[ATCG]+", input_seq_2):
             return jsonify({"error": "Sequence 2 must contain only A, T, C or G."}), 400
-        if len(input_seq_2) > 100:
+        if len(input_seq_2) > 200:
             return jsonify({"error": "Sequence 2 is too long. Max = 100bp."}), 400
         '''
         if input_seq_1 == input_seq_2:
@@ -1757,6 +1769,8 @@ def results():
         protein_2_h = highlight_changes(protein_2, protein_1)
 
         max_mismatch = request.form.get("max_mismatch", 2)  # valor padrão: 2
+        if max_mismatch not in VALID_MISMATCHES:
+            return "Erro: Valor de mismatch inválido.", 400
         try:
             max_mismatch = int(max_mismatch)
         except ValueError:
@@ -1883,14 +1897,16 @@ def results():
 
 
         #GRNAS E PAMS
-        gRNA_input_string = request.form.get('gRNAs', 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA').upper().replace(" ", "")
+        gRNA_input_string_raw = request.form.get('gRNAs', 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA').upper().replace(" ", "")
+        gRNA_input_string = bleach.clean(gRNA_input_string_raw)
+        
         # Validação
         if not re.fullmatch(r"[ATCG,]+", gRNA_input_string):
             return jsonify({"error": "gRNAs must contain only A, T, C or G."}), 400
         if len(gRNA_input_string) > 220:
             return jsonify({"error": "Too much sequences. Max = 10."}), 400
 
-
+        
 
         gRNAs = [g.strip().upper() for g in gRNA_input_string.split(',')]
         p_s1_l = find_pam_for_grnas(seq_1_l, gRNAs)

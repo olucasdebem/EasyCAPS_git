@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='favicon2.png') }}">
     <title>Resultados da Análise</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
@@ -25,7 +26,11 @@
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 8px;
+            font-family: monospace;
+            overflow-x: auto;
+            word-break: break-all
         }
+        
         .sequence {
             font-family: monospace;
             white-space: pre-wrap;
@@ -53,23 +58,26 @@
 
         .result-section .section-title {
             margin-bottom: 1rem;
+            font-family: monospace;
             font-size: 1.5rem;
             color: #333;
         }
 
         .enzyme-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 0.5rem; /* Opcional: Reduzir o espaçamento entre os cards */
         }
         .enzyme-item {
             background-color: white;
             border: 1px solid #e0e0e0;
-            border-radius: 8px; /* Cantos arredondados */
-            padding: 15px;
+            border-radius: 8px;
+            padding: 5px; /* ANTES: 15px */
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra subtil */
-            transition: transform 0.2s ease-in-out; /* Animação suave */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out;
+            font-family: monospace;
+            font-size: 0.9em;
         }
 
         .enzyme {
@@ -78,25 +86,15 @@
             border-radius: 8px;
             padding: 1rem;
             box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
-            font-size: 0.95rem;
         }
-        .results-container {
-            font-family: monospace;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            overflow-x: auto;
-            word-break: break-all
-        }
-
+        
         /* Estilo de cada "card" de resultado */
         .result-card {
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 16px; /* Espaço entre os cards */
-            background-color: #f9f9f9;
+            background-color: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
@@ -115,12 +113,74 @@
             border-radius: 4px;
             border: 1px solid #eee;
         }
+        .sequence-table {
+            width: 100%;
+            border-collapse: collapse; /* Remove espaços entre as bordas */
+            margin-top: 15px;
+        }
+        .sequence-table tr {
+            border-radius: 4px;
+            border: 1px solid #eee;
+            background-color: #fff;
+        }
+        .sequence-table td {
+            padding: 8px 4px;
+            vertical-align: top; /* Alinha o texto no topo da célula */
+            border-bottom: 1px solid #eee; /* Linha sutil entre as sequências */
+        }
+
+        /* A MÁGICA DO ALINHAMENTO ACONTECE AQUI */
+        .sequence-table td:first-child {
+            width: 200px; /* Define uma largura fixa para a primeira coluna (dos rótulos) */
+            font-weight: bold;
+            white-space: nowrap; /* Impede que o rótulo quebre a linha */
+        }
+
+        .sequence-mono {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all; /* Garante que sequências longas sem espaços quebrem a linha */
+        }
+        .sequence-table .pair-divider td {
+            border-bottom: 2px solid #ccc; /* Borda mais grossa no final do par */
+            padding-bottom: 15px; /* Aumenta o espaço vertical após o par */
+        }
 
     </style>
 </head>
 <body>
     <h1 class="title">EasyCAPS Finder: Results</h1>
-    
+
+   <div class="result-section">
+        <h2 class="section-title">DNA Sequences:</h2>
+   <table class="sequence-table">
+    <tbody>
+        <tr>
+            <td><strong>Input Seq 1:</strong></td>
+            <td class="sequence-mono">{{ input_seq_1_h|safe }}</td>
+        </tr>
+        <tr class="pair-divider">  <td><strong>Input Seq 2:</strong></td>
+            <td class="sequence-mono">{{ input_seq_2_h|safe }}</td>
+        </tr>
+        <tr>
+            <td><strong>Input Seq 1 Rev-Comp:</strong></td>
+            <td class="sequence-mono">{{ input_seq_1_rc_h|safe }}</td>
+        </tr>
+        <tr class="pair-divider">  <td><strong>Input Seq 2 Rev-Comp:</strong></td>
+            <td class="sequence-mono">{{ input_seq_2_rc_h|safe }}</td>
+        </tr>
+        <tr>
+            <td><strong>Protein 1:</strong></td>
+            <td class="sequence-mono">{{ protein_1_h|safe }}</td>
+        </tr>
+        <tr>
+            <td><strong>Protein 2:</strong></td>
+            <td class="sequence-mono">{{ protein_2_h|safe }}</td>
+        </tr>
+    </tbody>
+    </table>
+    </div>
+    <!--
     <div class="result-section">
         <h2 class="section-title">DNA Sequence 1:</h2>
 
@@ -128,13 +188,13 @@
         <div class="sequence"><strong>Input Seq 1 Rev-Comp:</strong> {{ input_seq_1_rc_h|safe }}</div>
         <div class="sequence"><strong>Protein 1:</strong> {{ protein_1_h|safe }}</div>
 
-        <!--
+        <!- 
         <div class="sequence">First SNP left Input Seq: {{ snp_left_s1 }} {{bl1}}</div>
         <div class="sequence">Seq 1 around left: {{ seq_1_l }}</div>
         <div class="sequence">Seq 1 around left Rev-Comp: {{ seq_1_l_rc }}</div>
         <div class="sequence">First SNP left around: {{ snp_l_s1 }} {{bl1}}</div>
         <div class="sequence">Protein 1 around left: {{ protein_1l }}</div>
-        -->
+        --
     </div>
     
     <div class="result-section">
@@ -144,33 +204,28 @@
         <div class="sequence"><strong>Seq 2 Rev-Comp:</strong> {{ input_seq_2_rc_h|safe }}</div>
         <div class="sequence"><strong>Protein 2:</strong> {{ protein_2_h|safe }}</div>
 
-        <!--
+        <!-
         <div class="sequence">First SNP left: {{ snp_left_s2 }} {{bl2}}</div>
         <div class="sequence">Seq 2 around left: {{ seq_2_l }}</div>
         <div class="sequence">Seq 2 around left Rev-Comp: {{ seq_2_l_rc }}</div>
         <div class="sequence">First SNP left around: {{ snp_l_s2 }} {{bl2}}</div>
         <div class="sequence">Protein 2 around left: {{ protein_2l }}</div>
-        -->
+        --
     </div>
+    -->
     
    {% if selected_enzymes %}
     <div class="result-section">
         <h2 class="section-title">Selected Enzymes:</h2>
-        
-        <!-- O seu CSS .enzyme-grid é aplicado a este div -->
         <div class="enzyme-grid">
-            
-            <!-- O loop agora cria um div para cada enzima -->
             {% for name, details in selected_enzymes.items() %}
-                <!-- Cada um destes divs será um item na sua grelha de colunas -->
                 <div class="enzyme-item">
-                    <i>{{ name }}</i>: {{ details[0] }}
+                    <strong><i>{{ name }}</i>:</strong><br> {{ details[0] }}
                 </div>
             {% endfor %}
-
         </div>
     </div>
-{% endif %}
+    {% endif %}
             <!--
             <div class="enzyme">
                 <strong>Enzimas palindrômicas:</strong>
@@ -226,8 +281,7 @@
         <div class="sequence"><b>lista_final_final_l_s1:</b> {{ lista_final_final_l_s1|safe }}</div>
         -->
         <div class="results-container">
-            <b>dCAPs Seq 1:</b>
-            <div class="sequence"><strong>Max-mismatches:</strong> {{ max_mismatch }}</div>
+            <b>dCAPs in Seq 1 with max-mismatches = {{ max_mismatch }}:</b>
             {% if lista_final_final_l_s1 %}  {% for item in lista_final_final_l_s1 %}
                     <div class="result-card">
                          <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[7]|safe }} </li>
@@ -275,7 +329,7 @@
         <div class="sequence"><b>lista_final_final_l_s2:</b> {{ lista_final_final_l_s2 }}</div>
         -->
         <div class="results-container">
-            <b>dCAPs Seq 2:</b>
+            <b>dCAPs in Seq 2 with max-mismatches = {{ max_mismatch }}:</b>
             <div class="sequence"><strong>Max-mismatches:</strong> {{ max_mismatch }}</div>
             {% if lista_final_final_l_s2 %}  {% for item in lista_final_final_l_s2 %}
                     <div class="result-card">
