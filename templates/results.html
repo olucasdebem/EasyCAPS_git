@@ -67,6 +67,8 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
             gap: 0.5rem; /* Opcional: Reduzir o espaçamento entre os cards */
+            max-height: 300px;
+            overflow-y: auto;
         }
         .enzyme-item {
             background-color: white;
@@ -115,8 +117,19 @@
         }
         .sequence-table {
             width: 100%;
-            border-collapse: collapse; /* Remove espaços entre as bordas */
             margin-top: 15px;
+
+            /* PASSO 1: Mudar a forma como as bordas se comportam */
+            border-collapse: separate; /* Em vez de 'collapse' */
+            border-spacing: 0;         /* Remove o espaço padrão entre as células */
+            
+            /* PASSO 2: Arredondar os cantos e 'cortar' o que sobrar */
+            border-radius: 10px;        /* Use o mesmo raio dos seus outros elementos */
+            overflow: hidden;           /* ESSA É A MÁGICA: força as células internas a respeitarem o canto arredondado do contêiner */
+            
+            /* PASSO 3 (Opcional): Adiciona uma borda externa para definir a caixa */
+            border: 1px solid #e0e0e0;
+        }
         }
         .sequence-table tr {
             border-radius: 4px;
@@ -124,11 +137,11 @@
             background-color: #fff;
         }
         .sequence-table td {
-            padding: 8px 4px;
-            vertical-align: top; /* Alinha o texto no topo da célula */
-            border-bottom: 1px solid #eee; /* Linha sutil entre as sequências */
+            padding: 12px;
+            vertical-align: top;
+            background-color: #fff; /* O fundo agora vai em cada célula */
+            border-bottom: 1px solid #f0f0f0; /* Linha divisória interna bem sutil */
         }
-
         /* A MÁGICA DO ALINHAMENTO ACONTECE AQUI */
         .sequence-table td:first-child {
             width: 200px; /* Define uma largura fixa para a primeira coluna (dos rótulos) */
@@ -145,74 +158,51 @@
             border-bottom: 2px solid #ccc; /* Borda mais grossa no final do par */
             padding-bottom: 15px; /* Aumenta o espaço vertical após o par */
         }
+        .sequence-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Mantém o estilo da primeira coluna que você já tinha */
+        .sequence-table td:first-child {
+            width: 200px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
 
     </style>
 </head>
 <body>
-    <h1 class="title">EasyCAPS Finder: Results</h1>
-
-   <div class="result-section">
-        <h2 class="section-title">DNA Sequences:</h2>
-   <table class="sequence-table">
-    <tbody>
-        <tr>
-            <td><strong>Input Seq 1:</strong></td>
-            <td class="sequence-mono">{{ input_seq_1_h|safe }}</td>
-        </tr>
-        <tr class="pair-divider">  <td><strong>Input Seq 2:</strong></td>
-            <td class="sequence-mono">{{ input_seq_2_h|safe }}</td>
-        </tr>
-        <tr>
-            <td><strong>Input Seq 1 Rev-Comp:</strong></td>
-            <td class="sequence-mono">{{ input_seq_1_rc_h|safe }}</td>
-        </tr>
-        <tr class="pair-divider">  <td><strong>Input Seq 2 Rev-Comp:</strong></td>
-            <td class="sequence-mono">{{ input_seq_2_rc_h|safe }}</td>
-        </tr>
-        <tr>
-            <td><strong>Protein 1:</strong></td>
-            <td class="sequence-mono">{{ protein_1_h|safe }}</td>
-        </tr>
-        <tr>
-            <td><strong>Protein 2:</strong></td>
-            <td class="sequence-mono">{{ protein_2_h|safe }}</td>
-        </tr>
-    </tbody>
-    </table>
-    </div>
-    <!--
-    <div class="result-section">
-        <h2 class="section-title">DNA Sequence 1:</h2>
-
-        <div class="sequence"><strong>Input Seq 1:</strong> {{ input_seq_1_h|safe }}</div>
-        <div class="sequence"><strong>Input Seq 1 Rev-Comp:</strong> {{ input_seq_1_rc_h|safe }}</div>
-        <div class="sequence"><strong>Protein 1:</strong> {{ protein_1_h|safe }}</div>
-
-        <!- 
-        <div class="sequence">First SNP left Input Seq: {{ snp_left_s1 }} {{bl1}}</div>
-        <div class="sequence">Seq 1 around left: {{ seq_1_l }}</div>
-        <div class="sequence">Seq 1 around left Rev-Comp: {{ seq_1_l_rc }}</div>
-        <div class="sequence">First SNP left around: {{ snp_l_s1 }} {{bl1}}</div>
-        <div class="sequence">Protein 1 around left: {{ protein_1l }}</div>
-        --
-    </div>
+    <h1 class="title">EasyCAPS Finder - Results:</h1>
     
     <div class="result-section">
-        <h2 class="section-title">DNA Sequence 2:</h2>
-
-        <div class="sequence"><strong>Input Seq 2:</strong> {{ input_seq_2_h|safe }}</div>
-        <div class="sequence"><strong>Seq 2 Rev-Comp:</strong> {{ input_seq_2_rc_h|safe }}</div>
-        <div class="sequence"><strong>Protein 2:</strong> {{ protein_2_h|safe }}</div>
-
-        <!-
-        <div class="sequence">First SNP left: {{ snp_left_s2 }} {{bl2}}</div>
-        <div class="sequence">Seq 2 around left: {{ seq_2_l }}</div>
-        <div class="sequence">Seq 2 around left Rev-Comp: {{ seq_2_l_rc }}</div>
-        <div class="sequence">First SNP left around: {{ snp_l_s2 }} {{bl2}}</div>
-        <div class="sequence">Protein 2 around left: {{ protein_2l }}</div>
-        --
+        <h2 class="section-title">Input Sequences info</h2>
+        <table class="sequence-table">
+            <tbody>
+                <tr>
+                    <td><strong>Input Allele 1:</strong></td>
+                    <td class="sequence-mono">{{ input_seq_1_h|safe }}</td>
+                </tr>
+                <tr class="pair-divider">  <td><strong>Input Allele 2:</strong></td>
+                    <td class="sequence-mono">{{ input_seq_2_h|safe }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Input Alelle 1 Rev-Comp:</strong></td>
+                    <td class="sequence-mono">{{ input_seq_1_rc_h|safe }}</td>
+                </tr>
+                <tr class="pair-divider">  <td><strong>Input Allele 2 Rev-Comp:</strong></td>
+                    <td class="sequence-mono">{{ input_seq_2_rc_h|safe }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Protein 1:</strong></td>
+                    <td class="sequence-mono">{{ protein_1_h|safe }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Protein 2:</strong></td>
+                    <td class="sequence-mono">{{ protein_2_h|safe }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    -->
     
    {% if selected_enzymes %}
     <div class="result-section">
@@ -226,29 +216,30 @@
         </div>
     </div>
     {% endif %}
-            <!--
-            <div class="enzyme">
-                <strong>Enzimas palindrômicas:</strong>
-                <ul>
-                    {% for name, details in selected_enzymes_p.items() %}
-                        <li>{{ name }}: {{ details[0] }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="enzyme">
-                <strong>Enzimas não-palindrômicas:</strong>
-                <ul>
-                    {% for name, details in selected_enzymes_np.items() %}
-                        <li>{{ name }}: {{ details[0] }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            -->
+    
+<!--
+    <div class="result-section">
+        <h2 class="section-title">DNA Sequence 1:</h2>
+        <div class="sequence">First SNP left Input Seq: {{ snp_left_s1 }} {{bl1}}</div>
+        <div class="sequence">Seq 1 around left: {{ seq_1_l }}</div>
+        <div class="sequence">Seq 1 around left Rev-Comp: {{ seq_1_l_rc }}</div>
+        <div class="sequence">First SNP left around: {{ snp_l_s1 }} {{bl1}}</div>
+        <div class="sequence">Protein 1 around left: {{ protein_1l }}</div>
+    </div>
+    
+    <div class="result-section">
+        <h2 class="section-title">DNA Sequence 2:</h2>
+        <div class="sequence">First SNP left: {{ snp_left_s2 }} {{bl2}}</div>
+        <div class="sequence">Seq 2 around left: {{ seq_2_l }}</div>
+        <div class="sequence">Seq 2 around left Rev-Comp: {{ seq_2_l_rc }}</div>
+        <div class="sequence">First SNP left around: {{ snp_l_s2 }} {{bl2}}</div>
+        <div class="sequence">Protein 2 around left: {{ protein_2l }}</div>
+    </div>
+-->
 
     <div class="result-section">
         <h2 class="section-title">CAPS and dCAPS Seq 1</h2>
-        <!--
+<!--
         <div class="sequence"><b>rs_s1_l:</b> {{ rs_s1_l }}</div>
         <div class="sequence"><b>rs_s1_l_rc:</b> {{ rs_s1_l_rc }}</div>
 
@@ -256,18 +247,18 @@
         <div class="sequence"><b>unique_rs_l_s1:</b> {{ unique_rs_l_s1 }}</div>
         <div class="sequence"><b>natural_rs_s1_l:</b> {{ natural_rs_s1_l }}</div>
         <div class="sequence"><b>natural_rs_s1_l_final:</b> {{ natural_rs_s1_l_final }}</div>
-        -->
-        <div class="results-container"><b>CAPs Seq 1:</b>
+-->
+        <div class="results-container"><b>CAPS found in Allele 1:</b>
         {% if natural_rs_s1_l_final %} {% for item in natural_rs_s1_l_final %}
              <div class="result-card">
                 <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> - Position: {{ item[2] }} - {{ item[3] }}</li>
              </div>
              {% endfor %}
         {% else %}
-            <p class="result-card">There is no CAPS for Seq 1</p>
+            <p class="result-card">There is no natural CAPS for Allele 1</p>
         {% endif %}
         </div>
-        <!--
+<!--
         <div class="sequence"><b>primers_l_s1:</b> {{ primers_l_s1 }}</div>
         <div class="sequence"><b>validated_primers_l_s1:</b> {{ validated_primers_l_s1 }}</div>
         <div class="sequence"><b>lista_final_l_s1:</b> {{ lista_final_l_s1 }}</div>
@@ -279,24 +270,24 @@
         <div class="sequence"><b>validated_primers_l_s1_rc:</b> {{ validated_primers_l_s1_rc }}</div>
         <div class="sequence"><b>lista_final_l_s1_rc:</b> {{ lista_final_l_s1_rc }}</div>
         <div class="sequence"><b>lista_final_final_l_s1:</b> {{ lista_final_final_l_s1|safe }}</div>
-        -->
+-->
         <div class="results-container">
-            <b>dCAPs in Seq 1 with max-mismatches = {{ max_mismatch }}:</b>
+            <b>dCAPS in Alelle 1 with max-mismatches = {{ max_mismatch }}:</b>
             {% if lista_final_final_l_s1 %}  {% for item in lista_final_final_l_s1 %}
                     <div class="result-card">
-                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[7]|safe }} </li>
+                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} <!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="result-card">There is no dCAPS for Seq 1</p>
+                <p class="result-card">There is no dCAPS for Alelle 1</p>
             {% endif %}
         </div>
         <!--END-->
     </div>
 
     <div class="result-section">
-        <h2 class="section-title">CAPS and dCAPS Seq 2</h2>
-        <!--
+        <h2 class="section-title">CAPS and dCAPS found in Allele 2</h2>
+<!--
         <div class="sequence"><b>rs_s2_l:</b> {{ rs_s2_l }}</div>
         <div class="sequence"><b>rs_s2_l_rc:</b> {{ rs_s2_l_rc }}</div>
 
@@ -304,18 +295,18 @@
         <div class="sequence"><b>unique_rs_l_s2:</b> {{ unique_rs_l_s2 }}</div>
         <div class="sequence"><b>natural_rs_s2_l:</b> {{ natural_rs_s2_l }}</div>
         <div class="sequence"><b>natural_rs_s2_l_final:</b> {{ natural_rs_s2_l_final }}</div>
-        -->
-        <div class="results-container"><b>CAPs Seq 2:</b>
+-->
+        <div class="results-container"><b>CAPS in Allele 2:</b>
         {% if natural_rs_s2_l_final %} {% for item in natural_rs_s2_l_final %}
              <div class="result-card">
-                <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[4] }} </li>
+                <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> - Position: {{ item[2] }} - {{ item[3] }}</li>
              </div>
              {% endfor %}
         {% else %}
-            <p class="result-card">There is no CAPS for Seq 2</p>
+            <p class="result-card">There is no CAPS for Allele 2</p>
         {% endif %}
         </div>
-        <!--
+<!--
         <div class="sequence"><b>primers_l_s2:</b> {{ primers_l_s2 }}</div>
         <div class="sequence"><b>validated_primers_l_s2:</b> {{ validated_primers_l_s2 }}</div>
         <div class="sequence"><b>lista_final_l_s2:</b> {{ lista_final_l_s2 }}</div>
@@ -327,17 +318,17 @@
         <div class="sequence"><b>validated_primers_l_s2_rc:</b> {{ validated_primers_l_s2_rc }}</div>
         <div class="sequence"><b>lista_final_l_s2_rc:</b> {{ lista_final_l_s2_rc }}</div>
         <div class="sequence"><b>lista_final_final_l_s2:</b> {{ lista_final_final_l_s2 }}</div>
-        -->
+-->
         <div class="results-container">
-            <b>dCAPs in Seq 2 with max-mismatches = {{ max_mismatch }}:</b>
+            <b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
             <div class="sequence"><strong>Max-mismatches:</strong> {{ max_mismatch }}</div>
             {% if lista_final_final_l_s2 %}  {% for item in lista_final_final_l_s2 %}
                     <div class="result-card">
-                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} - Position: {{ item[2] }} - {{ item[3] }}<br>{{ item[7]|safe }} </li>
+                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="result-card">There is no dCAPS for Seq 2</p>
+                <p class="result-card">There is no dCAPS for Allele 2</p>
             {% endif %}
         </div>
         <!-- END-->
@@ -346,7 +337,7 @@
     <div class="result-section">
         <h2 class="section-title">Generate CAPS in DNA Donor</h2>
         <div class="sequence"><b>Organism selected for codon usage:</b> {{ organism_selected }}</div>
-        <!--
+<!--
         <div class="sequence"><b>rs_s2_l_1m:</b> {{ rs_s2_l_1m }}</div>
         <div class="sequence"><b>rs_s2_l_1m_rc:</b> {{ rs_s2_l_1m_rc }}</div>
         <div class="sequence"><b>grs_s2_l:</b> {{ grs_s2_l }}</div>
@@ -356,20 +347,34 @@
         <div class="sequence"><b>grs_s2_l_final:</b> {{ grs_s2_l_final }}</div>
         <div class="sequence"><b>grs_s2_l_final_final:</b> {{ grs_s2_l_final_final }}</div>
         <div class="sequence"><b>grs_s2_l_final_final_cu:</b> {{ grs_s2_l_final_final_cu }}</div>
-        -->
-        
+-->
+        <div class="sequence"><b>seq_2_ld:</b> {{ seq_2_ld }}</div>
+        <div class="sequence"><b>seq_2_ld_rc:</b> {{ seq_2_ld_rc }}</div>
+        <div class="sequence"><b>protein_2_ld:</b> {{ protein_2_ld }}</div>
+<!--
+        <div class="sequence"><b>rs_s2_ld:</b> {{ rs_s2_ld }}</div>
+        <div class="sequence"><b>rs_s2_ld_1m:</b> {{ rs_s2_ld_1m }}</div>
+        <div class="sequence"><b>grs_s2_ld:</b> {{ grs_s2_ld }}</div>
+        <div class="sequence"><b>grs_s2_ld_t:</b> {{ grs_s2_ld_t }}</div>
+        <div class="sequence"><b>rs_s2_ld_rc:</b> {{ rs_s2_ld_rc }}</div>
+        <div class="sequence"><b>rs_s2_ld_1m_rc:</b> {{ rs_s2_ld_1m_rc }}</div>
+        <div class="sequence"><b>grs_s2_ld_rc:</b> {{ grs_s2_ld_rc }}</div>
+        <div class="sequence"><b>grs_s2_ld_rc_t:</b> {{ grs_s2_ld_rc_t }}</div>
+        <div class="sequence"><b>grs_s2_ld_final:</b> {{ grs_s2_ld_final }}</div>
+        <div class="sequence"><b>grs_s2_ld_final_final:</b> {{ grs_s2_ld_final_final }}</div>
+        <div class="sequence"><b>grs_s2_ld_final_final_cu:</b> {{ grs_s2_ld_final_final_cu | safe }}</div>
+-->
         <div class="results-container">
             <b>CAPs in Donor:</b>
-            {% if grs_s2_l_final_final_cu %}  {% for item in grs_s2_l_final_final_cu %}
+            {% if grs_s2_ld_final_final_cu %}  {% for item in grs_s2_ld_final_final_cu %}
                     <div class="result-card">
                          <li><i><strong>{{ item[0] }}</i>: {{ item[6] }}</strong> - Position: {{ item[3] }} - {{ item[4] }}, Codon usage difference: {{ item[1] }} = {{ item[2] }} <br>Donor:{{ item[5]|safe }}<br> </li>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="result-card">There is no dCAPS for Seq 2</p>
+                <p class="result-card">It's not possible design a CAPS for Seq 2</p>
             {% endif %}
         </div>
-        <!-- END-->
     </div>
 
     <div class="result-section">

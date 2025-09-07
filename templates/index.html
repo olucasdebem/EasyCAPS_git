@@ -178,9 +178,47 @@
         font-weight: bold;
         padding: 0 2px;
     }
+    /* Estilos para o Overlay de Carregamento */
+    #loading-overlay {
+        position: fixed; /* Cobre a tela inteira, mesmo com scroll */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8); /* Fundo branco semitransparente */
+        display: none; /* COMEÇA ESCONDIDO */
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 9999; /* Garante que fique por cima de tudo */
+        text-align: center;
+        color: #2c3e50;
+        font-size: 1.2em;
+    }
+
+    .spinner {
+        border: 8px solid #f3f3f3; /* Cinza claro */
+        border-top: 8px solid #3498db; /* Azul do seu botão */
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 </head>
 <body>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Analisando sequências... Por favor, aguarde.</p>
+        <p>Isso pode levar alguns segundos.</p>
+    </div>
+    
     <h1>EasyCAPS Finder</h1>
 
 <div class="dna-form">
@@ -229,11 +267,15 @@
         </div>
         <div>
             <label for="organism">Codon usage:</label><br>
-                <select class="input_seq" name="organism" id="organism">
-                    <option value="Yeast">S. cerevisiae</option>
-                    <option value="E. coli">E. coli</option>
-                    <option value="Human">Human</option>
-                </select>
+            <select class="input_seq" name="organism" id="organism">
+                
+                {% for value, display_text in organisms.items() %}
+                    <option value="{{ value }}" {% if value == selected_organism %}selected{% endif %}>
+                        {{ display_text }}
+                    </option>
+                {% endfor %}
+
+            </select>
         </div>
 
         <div>
@@ -252,38 +294,26 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- PARTE 1: SELEÇÃO DOS ELEMENTOS ---
+    // Pegamos todos os elementos que vamos usar uma única vez, no início.
+    const dnaForm = document.querySelector('.dna-form form');
+    const loadingOverlay = document.getElementById('loading-overlay');
     const enzymeOptionsContainer = document.getElementById('enzymeOptionsContainer');
     const searchInput = document.getElementById('enzymeSearch');
     const enzymeOptions = Array.from(enzymeOptionsContainer.querySelectorAll('.enzyme-option'));
     const enzymeCheckboxes = Array.from(enzymeOptionsContainer.querySelectorAll('input[type="checkbox"]'));
     const selectAllCheckbox = document.getElementById('selectAllEnzymes');
 
-    // Marcar todos por padrão
-    selectAllCheckbox.checked = true;
-    enzymeCheckboxes.forEach(cb => cb.checked = true);
-
-    // Evento para selecionar/desselecionar todos
-    selectAllCheckbox.addEventListener('change', function() {
-        enzymeCheckboxes.forEach(cb => cb.checked = this.checked);
-    });
-
-    // Sincronizar o Select All se algum checkbox individual for alterado
-    enzymeCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            selectAllCheckbox.checked = enzymeCheckboxes.every(c => c.checked);
-        });
-    });
-
-
-    // Função para destacar os termos de busca
+    // --- PARTE 2: DEFINIÇÃO DAS FUNÇÕES AUXILIARES ---
+    // Definimos as funções que serão usadas pelos eventos.
     function highlightText(text, searchTerm) {
         if (!searchTerm) return text;
         const regex = new RegExp(searchTerm, 'gi');
         return text.replace(regex, match => `<span class="highlight">${match}</span>`);
     }
 
-    // Função de busca/filtro
     function filterEnzymes(searchTerm) {
         searchTerm = searchTerm.toLowerCase();
         let hasResults = false;
@@ -291,7 +321,7 @@
         enzymeOptions.forEach(option => {
             const label = option.querySelector('label');
             const originalText = label.dataset.originalText || label.textContent;
-            label.dataset.originalText = originalText; // Guarda o texto original
+            label.dataset.originalText = originalText;
             
             const matches = originalText.toLowerCase().includes(searchTerm);
             option.style.display = matches ? 'flex' : 'none';
@@ -302,7 +332,6 @@
             }
         });
 
-        // Mostra mensagem se não encontrar resultados
         const noResults = document.getElementById('noResultsMessage');
         if (!hasResults && searchTerm) {
             if (!noResults) {
@@ -317,12 +346,38 @@
         }
     }
 
-    // Evento de busca
+    // --- PARTE 3: CONFIGURAÇÃO DOS EVENTOS ---
+    // Adicionamos todos os 'escutadores' de eventos, cada um com sua responsabilidade.
+    
+    // Evento para mostrar o LOADING ao enviar o formulário
+    dnaForm.addEventListener('submit', function() {
+        loadingOverlay.style.display = 'flex';
+    });
+
+    // Evento para esconder o LOADING ao usar o botão "Voltar" do navegador
+    window.addEventListener('pageshow', function(event) {
+        loadingOverlay.style.display = 'none';
+    });
+    
+    // Eventos de interatividade das ENZIMAS
+    selectAllCheckbox.addEventListener('change', function() {
+        enzymeCheckboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    enzymeCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            selectAllCheckbox.checked = enzymeCheckboxes.every(c => c.checked);
+        });
+    });
+
     searchInput.addEventListener('input', function() {
         filterEnzymes(this.value);
     });
-
-    // Focar no campo de busca ao carregar
+    
+    // --- PARTE 4: AÇÕES INICIAIS ---
+    // Código que deve rodar uma única vez no carregamento da página.
+    selectAllCheckbox.checked = true;
+    enzymeCheckboxes.forEach(cb => cb.checked = true);
     searchInput.focus();
 });
 </script>
