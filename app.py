@@ -96,14 +96,14 @@ def highlight_variable_region(seq1, seq2):
         pass
     elif len(variable_region) == 1:
         first_char = variable_region[0]
-        highlighted_variable_html = f'<span style="background-color:#ffadad;">{first_char}</span>'
+        highlighted_variable_html = f'<span style="background-color:#ffffad;">{first_char}</span>'
     else:
         first_char = variable_region[0]
         middle = variable_region[1:-1]
         last_char = variable_region[-1]
-        special_highlight = f'<span style="background-color:#ffadad;">{first_char}</span>'
-        normal_highlight = f'<span style="background-color:#ffff99;">{middle}</span>'
-        special_highlight_end = f'<span style="background-color:#ffadad;">{last_char}</span>'     
+        special_highlight = f'<span style="background-color:#ffffad;">{first_char}</span>'
+        normal_highlight = f'<span style="background-color:#adff99;">{middle}</span>'
+        special_highlight_end = f'<span style="background-color:#ffffad;">{last_char}</span>'     
         highlighted_variable_html = special_highlight + normal_highlight + special_highlight_end
     return prefix + highlighted_variable_html + suffix
 # ^^^ SHOW ^^^
@@ -144,7 +144,7 @@ def highlight_changes(modified_seq, original_seq):
         return modified_upper
     for i in range(len(original_upper)):
         if original_upper[i] != modified_upper[i]:
-            highlighted_output += f'<span style="background-color:red">{modified_upper[i]}</span>'
+            highlighted_output += f'<span style="background-color:#ffadad">{modified_upper[i]}</span>'
         else:
             highlighted_output += original_upper[i]
     return highlighted_output
@@ -749,7 +749,7 @@ def results():
 
 
         # --- Block 3L: Main Algorithm for CAPS and dCAPS  ---
-        max_mismatch_str = request.form.get("max_mismatch", 2)
+        max_mismatch_str = request.form.get("max_mismatch", 1)
 
         valid_mismatches = {"1", "2", "3"}
         if max_mismatch_str not in valid_mismatches:
@@ -1140,6 +1140,9 @@ def results():
     
     except Exception as e:
         return f"Erro: {str(e)}", 500
-
+'''
 if __name__ == "__main__":
     serve(app, host="0.0.0.0", port=8000)
+'''
+if __name__ == '__main__':
+    app.run(debug=True)

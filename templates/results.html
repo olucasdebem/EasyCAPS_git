@@ -168,6 +168,24 @@
             font-weight: bold;
             white-space: nowrap;
         }
+         /* NOVOS ESTILOS PARA O BOTÃO FIXO */
+        .submit-container-sticky {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .submit-container-sticky button {
+            margin: 0; /* Remove a margem superior que o botão tinha */
+        }
 
     </style>
 </head>
@@ -487,9 +505,11 @@
             END-->
         {% endif %}
     </div>
+    <br></br><br>
 
 
-    
-    <a href="/" style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">Nova Análise</a>
+    <div class="submit-container-sticky">
+    <a href="/" style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">New Analysis</a>
+</div>
 </body>
 </html>
