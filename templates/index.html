@@ -287,11 +287,12 @@
 <body>
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <p>Analisando sequências... Por favor, aguarde.</p>
-        <p>Isso pode levar alguns segundos.</p>
+        <p>Analysing sequences... Please, wait</p>
+        <p>This can take a few minutes</p>
     </div>
     
     <h1>EasyCAPS Finder</h1>
+    <h2> Enter two allelic sequences. The program will identify the differential SNP between them. In the case of INDELs (insertions/deletions), the program will analyze the first and last nucleotide variations between the sequences. Differential CAPS sites or dCAPS primers will be designed for each of these variations.</h2>
 
 <div class="dna-form">
     <form action="/results" method="post">
@@ -301,24 +302,25 @@
             <legend>CAPS / dCAPS Analysis</legend>
 
             <div class="sequence-group">
-                <label for="input_seq_1">DNA sequence 1:</label><br>
+                <label for="input_seq_1">DNA Allele 1:</label><br>
                 <input class="input_seq" id="input_seq_1" name="input_seq_1" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
             </div>
             
             <div class="sequence-group">
-                <label for="input_seq_2">DNA sequence 2:</label><br>
+                <label for="input_seq_2">DNA Allele 2:</label><br>
                 <input class="input_seq" id="input_seq_2" name="input_seq_2" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
             </div>
             <div>
-                <label for="max_mismatch">Max mismatches</label><br>
+                <label for="max_mismatch">Max mismatches in dCAPS primer (best value = 1)</label><br>
                 <select class="input_seq" name="max_mismatch" id="max_mismatch">
-                    <option value="1">1</option>
-                    <option value="2" selected>2</option>
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
                     <option value="3">3</option>
                 </select>
             </div>
             <div class="enzyme-group">
                 <h3>Select the restriction enzymes</h3>
+                <h4>The EasyCAPS Finder will search for CAPS (natural site) and dCAPS (engineered site) markers that differentiate your alleles, using only the enzymes you check.</h4>
                 <div class="search-container">
                     <i class="search-icon">🔍</i>
                     <input type="text" id="enzymeSearch" placeholder="Search enzymes by name or sequence...">
