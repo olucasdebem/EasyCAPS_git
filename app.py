@@ -459,6 +459,7 @@ def get_donor(seq, enzymes, codon_table, is_rc_analysis=False):
                 diffs = sum(1 for a, b in zip(seq, current_new_seq) if a != b)
                 if diffs <= 1:
                     grs_s2_filtered.append(item)
+        
             grs_s2 = grs_s2_filtered
             grs_s2_t = []
             if not is_rc_analysis:
@@ -718,6 +719,12 @@ def results():
         input_seq_1 = bleach.clean(request.form.get("input_seq_1", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", ""))
         input_seq_2 = bleach.clean(request.form.get("input_seq_2", "AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA").upper().replace(" ", ""))
 
+        if not input_seq_1:
+            input_seq_1="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"
+
+        if not input_seq_2:
+            input_seq_2="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"
+
         if not re.fullmatch(r"[ATCGRYSWKMBDHVN]+", input_seq_1):
             return jsonify({"error": "Sequence 1 must contain only DNA nucleotides."}), 400
         if len(input_seq_1) > 200:
@@ -877,14 +884,24 @@ def results():
         
 
         # --- Block 5L: Hiding PAM  ---
-        gRNA_input_string_raw = request.form.get('gRNAs', 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA').upper().replace(" ", "")
-        gRNA_input_string = bleach.clean(gRNA_input_string_raw)
-        
-        if not re.fullmatch(r"[ATCG,]+", gRNA_input_string):
-            return jsonify({"error": "gRNAs must contain only A, T, C or G."}), 400
-        if len(gRNA_input_string) > 220:
-            return jsonify({"error": "Too much sequences. Max = 10."}), 400
+        raw_gRNAs = request.form.get('gRNAs')
 
+        default_gRNAs = 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA'
+        
+        if not raw_gRNAs or not raw_gRNAs.strip():
+            gRNA_input_string = default_gRNAs.replace(" ", "")
+        else:
+            gRNA_input_string = bleach.clean(raw_gRNAs).upper().replace(" ", "").replace("\n", "").replace("\r", "")
+        
+        gRNA_list = [g for g in gRNA_input_string.split(',') if g]
+        
+        for gRNA in gRNA_list:
+            if not re.fullmatch(r"[ATCG]+", gRNA):
+                return jsonify({"error": f"Invalid gRNA found: '{gRNA}'. gRNAs must contain only A, T, C or G."}), 400
+        
+            if len(gRNA) < 10 or len(gRNA) > 30:
+                 return jsonify({"error": f"gRNA length invalid: '{gRNA}'."}), 400
+        
         gRNAs = [g.strip().upper() for g in gRNA_input_string.split(',')]
         p_s1_l = find_pam_for_grnas(seq_1_l, gRNAs)
         hp_s1_l = generate_and_translate_synonymous_variations(seq_1_l, p_s1_l, codon_table)
@@ -1032,14 +1049,24 @@ def results():
 
 
             # --- Block 5R: Hiding PAM  ---
-            gRNA_input_string_raw = request.form.get('gRNAs', 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA').upper().replace(" ", "")
-            gRNA_input_string = bleach.clean(gRNA_input_string_raw)
-            
-            if not re.fullmatch(r"[ATCG,]+", gRNA_input_string):
-                return jsonify({"error": "gRNAs must contain only A, T, C or G."}), 400
-            if len(gRNA_input_string) > 220:
-                return jsonify({"error": "Too much sequences. Max = 10."}), 400
+            raw_gRNAs = request.form.get('gRNAs')
 
+            default_gRNAs = 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA'
+            
+            if not raw_gRNAs or not raw_gRNAs.strip():
+                gRNA_input_string = default_gRNAs.replace(" ", "")
+            else:
+                gRNA_input_string = bleach.clean(raw_gRNAs).upper().replace(" ", "").replace("\n", "").replace("\r", "")
+            
+            gRNA_list = [g for g in gRNA_input_string.split(',') if g]
+            
+            for gRNA in gRNA_list:
+                if not re.fullmatch(r"[ATCG]+", gRNA):
+                    return jsonify({"error": f"Invalid gRNA found: '{gRNA}'. gRNAs must contain only A, T, C or G."}), 400
+            
+                if len(gRNA) < 10 or len(gRNA) > 30:
+                     return jsonify({"error": f"gRNA length invalid: '{gRNA}'."}), 400
+            
             gRNAs = [g.strip().upper() for g in gRNA_input_string.split(',')]
             p_s1_r = find_pam_for_grnas(seq_1_r, gRNAs)
             hp_s1_r = generate_and_translate_synonymous_variations(seq_1_r, p_s1_r, codon_table)

@@ -40,6 +40,10 @@
         font-size: 14px;
         resize: vertical;
         box-sizing: border-box; 
+        color:#888;
+    }
+    .input_seq:focus::placeholder {
+        opacity: 0;
     }
      textarea {
         width: 100%;
@@ -271,7 +275,7 @@
         left: 0;
         width: 100%;
         background-color: rgba(255, 255, 255, 0.9);
-        padding: 15px;
+        padding: 20px;
         box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
         display: flex;
         justify-content: center;
@@ -281,6 +285,27 @@
     }
     .submit-container-sticky button {
         margin: 0; /* Remove a margem superior que o botão tinha */
+    }
+    .my-signature {
+        text-align: center;       
+        padding: 10px 0;          
+        margin-top: 15px;         
+        border-top: 1px solid #eee; 
+        color: #777;              
+        font-family: sans-serif;
+        font-size: 14px;
+    }
+
+    .my-signature a {
+        color: #E1306C;           
+        text-decoration: none;    
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+
+    .my-signature a:hover {
+        color: #C13584;          
+        text-decoration: underline;
     }
    </style>
 </head>
@@ -303,12 +328,12 @@
 
             <div class="sequence-group">
                 <label for="input_seq_1">DNA Allele 1:</label><br>
-                <input class="input_seq" id="input_seq_1" name="input_seq_1" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
+                <input class="input_seq" id="input_seq_1" name="input_seq_1" placeholder="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
             </div>
             
             <div class="sequence-group">
                 <label for="input_seq_2">DNA Allele 2:</label><br>
-                <input class="input_seq" id="input_seq_2" name="input_seq_2" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
+                <input class="input_seq" id="input_seq_2" name="input_seq_2" placeholder="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
             </div>
             <div>
                 <label for="max_mismatch">Max mismatches in dCAPS primer (best value = 1)</label><br>
@@ -407,7 +432,7 @@
             </div>
             <div class="sequence-group">
                 <label for="gRNAs">gRNAs (separated by commas):</label><br>
-                <input class="input_seq" id="gRNAs" name="gRNAs" value="CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA"></input>
+                <input class="input_seq" id="gRNAs" name="gRNAs" placeholder="CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA"></input>
             </div>
 
         </fieldset>
@@ -424,13 +449,18 @@
                 </div>
                 <div class="technique-card">
                     <h3>Direct CRISPR Strategy</h3>
-                    <img src="{{ url_for('static', filename='Direct_CRISPR.jpg') }}" alt="Direct CRISPR" style="border:none;">
+                    <img src="{{ url_for('static', filename='Direct_CRISPR.jpg') }}" alt="Direct CRISPR">
                     <p>The replacement of alleles is achieved in a single transformation step. A repair template carries a silent base mutation within the protospacer adjacent motif (PAM). This strategy masks the Cas9 recognition site in the new allele, preventing recurrent cleavage and ensuring the efficiency of the edit without altering the protein sequence.</p>
                     <p>The <strong>EasyCAPS Finder</strong> translates allele 1 and identifies the PAMs related to the gRNAs provided by the user. The tool delivers modifications in the PAM sequence that do not alter the original protein, allowing for direct CRISPR.</p>
                 </div>
             </div>
         </div>
     </fieldset>
+    <footer class="my-signature">
+    <p>
+        Developed by <a href="https://www.instagram.com/SEU_USUARIO_AQUI" target="_blank" rel="noopener noreferrer">Lucas de Bem</a>
+    </p>
+</footer>
     <div class="submit-container-sticky">
         <button type="submit">Analyse</button>
     </div>
