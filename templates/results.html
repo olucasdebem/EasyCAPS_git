@@ -255,8 +255,11 @@
     </div>
 -->
 
-    <div class="result-section">
-        <h2 class="section-title">CAPS and dCAPS Seq 1</h2>
+    <div class="result-section" style="background-color: #e8f5e9;">
+        <div class="result-section">
+        <h2 class="section-title">CAPS and dCAPS in Allele 1 (for the first SNP upstream)</h2>
+        <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_l_h|safe }}<br>Seq 2: {{ seq_2_l_h|safe }}</div>
+
 <!--
         <div class="sequence"><b>rs_s1_l:</b> {{ rs_s1_l }}</div>
         <div class="sequence"><b>rs_s1_l_rc:</b> {{ rs_s1_l_rc }}</div>
@@ -266,10 +269,13 @@
         <div class="sequence"><b>natural_rs_s1_l:</b> {{ natural_rs_s1_l }}</div>
         <div class="sequence"><b>natural_rs_s1_l_final:</b> {{ natural_rs_s1_l_final }}</div>
 -->
-        <div class="results-container"><b>CAPS found in Allele 1:</b>
+        <div class="results-container"><br><b>CAPS found in Allele 1:</b>
         {% if natural_rs_s1_l_final %} {% for item in natural_rs_s1_l_final %}
              <div class="result-card">
-                <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> - Position: {{ item[2] }} - {{ item[3] }}</li>
+                <li>
+                    <i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> -  
+                    {{ seq_1_l[:item[2]-1] }}<strong>{{ item[1] }}</strong>{{ seq_1_l[item[3]:] }}
+                </li>
              </div>
              {% endfor %}
         {% else %}
@@ -290,10 +296,12 @@
         <div class="sequence"><b>lista_final_final_l_s1:</b> {{ lista_final_final_l_s1|safe }}</div>
 -->
         <div class="results-container">
-            <b>dCAPS in Alelle 1 with max-mismatches = {{ max_mismatch }}:</b>
+            <br><b>dCAPS in Alelle 1 with max-mismatches = {{ max_mismatch }}:</b>
             {% if lista_final_final_l_s1 %}  {% for item in lista_final_final_l_s1 %}
                     <div class="result-card">
-                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} <!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
+                        <li>
+                            <i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} <!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br> Diferential Primer: {{ item[7]|safe }}
+                        </li>
                     </div>
                 {% endfor %}
             {% else %}
@@ -304,7 +312,8 @@
     </div>
 
     <div class="result-section">
-        <h2 class="section-title">CAPS and dCAPS found in Allele 2</h2>
+        <h2 class="section-title">CAPS and dCAPS in Allele 2 (for the first SNP upstream)</h2>
+        <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_l_h|safe }}<br>Seq 2: {{ seq_2_l_h|safe }}</div>
 <!--
         <div class="sequence"><b>rs_s2_l:</b> {{ rs_s2_l }}</div>
         <div class="sequence"><b>rs_s2_l_rc:</b> {{ rs_s2_l_rc }}</div>
@@ -314,10 +323,13 @@
         <div class="sequence"><b>natural_rs_s2_l:</b> {{ natural_rs_s2_l }}</div>
         <div class="sequence"><b>natural_rs_s2_l_final:</b> {{ natural_rs_s2_l_final }}</div>
 -->
-        <div class="results-container"><b>CAPS in Allele 2:</b>
+        <div class="results-container"><br><b>CAPS in Allele 2:</b>
         {% if natural_rs_s2_l_final %} {% for item in natural_rs_s2_l_final %}
              <div class="result-card">
-                <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> - Position: {{ item[2] }} - {{ item[3] }}</li>
+                <li>
+                    <i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> 
+                    {{ seq_1_l[:item[2]-1] }}<strong>{{ item[1] }}</strong>{{ seq_1_l[item[3]:] }}
+                </li>
              </div>
              {% endfor %}
         {% else %}
@@ -338,8 +350,7 @@
         <div class="sequence"><b>lista_final_final_l_s2:</b> {{ lista_final_final_l_s2 }}</div>
 -->
         <div class="results-container">
-            <b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
-            <div class="sequence"><strong>Max-mismatches:</strong> {{ max_mismatch }}</div>
+            <br><b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
             {% if lista_final_final_l_s2 %}  {% for item in lista_final_final_l_s2 %}
                     <div class="result-card">
                          <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
@@ -351,9 +362,9 @@
         </div>
         <!-- END-->
     </div>
-
+    
     <div class="result-section">
-        <h2 class="section-title">Generate CAPS in DNA Donor</h2>
+        <h2 class="section-title">Generate CAPS in DNA Donor near first SNP upstream</h2>
         <div class="sequence"><b>Organism selected for codon usage:</b> {{ organism_selected }}</div>
 <!--
         <div class="sequence"><b>rs_s2_l_1m:</b> {{ rs_s2_l_1m }}</div>
@@ -366,9 +377,7 @@
         <div class="sequence"><b>grs_s2_l_final_final:</b> {{ grs_s2_l_final_final }}</div>
         <div class="sequence"><b>grs_s2_l_final_final_cu:</b> {{ grs_s2_l_final_final_cu }}</div>
 -->
-        <div class="sequence"><b>seq_2_ld:</b> {{ seq_2_ld }}</div>
-        <div class="sequence"><b>seq_2_ld_rc:</b> {{ seq_2_ld_rc }}</div>
-        <div class="sequence"><b>protein_2_ld:</b> {{ protein_2_ld }}</div>
+        <div class="sequence"><b>Seq 2:</b> {{ seq_2_ld }}<br><b>Protein Seq 2:</b> {{ protein_2_ld }}</div>
 <!--
         <div class="sequence"><b>rs_s2_ld:</b> {{ rs_s2_ld }}</div>
         <div class="sequence"><b>rs_s2_ld_1m:</b> {{ rs_s2_ld_1m }}</div>
@@ -383,7 +392,7 @@
         <div class="sequence"><b>grs_s2_ld_final_final_cu:</b> {{ grs_s2_ld_final_final_cu | safe }}</div>
 -->
         <div class="results-container">
-            <b>CAPs in Donor:</b>
+            <br><b>CAPs in Donor:</b>
             {% if grs_s2_ld_final_final_cu %}  {% for item in grs_s2_ld_final_final_cu %}
                     <div class="result-card">
                          <li><i><strong>{{ item[0] }}</i>: {{ item[6] }}</strong> - Position: {{ item[3] }} - {{ item[4] }}, Codon usage difference: {{ item[1] }} = {{ item[2] }} <br>Donor:{{ item[5]|safe }}<br> </li>
@@ -412,8 +421,7 @@
                 <p class="result-card">No gRNAs Input</p>
             {% endif %}
         </div>
-        <div class="sequence"><b>PAM:</b> 20bp-NGG </div>
-        <div class="sequence"><b>Organism selected for codon usage:</b> {{ organism_selected }}</div>
+        <div class="sequence"><b>PAM:</b> 20bp-NGG <br><b>Organism selected for codon usage:</b> {{ organism_selected }}</div><br>
         <!--
         <div class="sequence"><b>p_s1_l:</b> {{ p_s1_l }}</div>
         <div class="sequence"><b>hp_s1_l:</b> {{ hp_s1_l }}</div>
@@ -431,7 +439,7 @@
                     {% for result in results_list %}
                         <div class="result-card">
                             <p>
-                                <strong>gRNA:</strong> {{ gRNA }}
+                                <strong>{{ gRNA[1] }}:</strong> {{ gRNA[0] }}
                             </p>
                             <p>
                                 <strong>Codon change:</strong> {{ result['changes'][0] }}
@@ -442,15 +450,15 @@
 
                 {% endfor %}
             {% else %}
-                <p class="result-card">Nenhum resultado para exibir.</p>
+                <p class="result-card">It's not possible to design a donor without PAM and with the same protein for the gRNAs provided</p>
             {% endif %}
         </div>
     </div>
-
-        {% if right_snp %}
-            <div class="result-section">
+</div>
+        {% if snp_left_s1 != snp_right_s1 %}
+            <div class="result-section" style="background-color: #f3e5f5;">
                 <h2 class="section-title">There is another SNP downstream!</h2>
-            <!--
+    <!--
             <div class="sequence">First SNP Right: {{ snp_right_s1 }} {{ br1 }}</div>
             <div class="sequence">Seq 1 around right: {{ seq_1_r }}</div>
             <div class="sequence">Seq 1 around right Rev-Comp: {{ seq_1_r_rc }}</div>
@@ -464,7 +472,142 @@
             <div class="sequence">Protein 2 around right: {{ protein_2r }}</div>
 
             <h2 class="section-title">Restriction Sites Seq 1 Right</h2>
-        
+    -->
+            <div class="result-section">
+                <h2 class="section-title">CAPS and dCAPS in Allele 1 (for the first SNP downstream)</h2>
+                <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_r_h|safe }}<br>Seq 2: {{ seq_2_r_h|safe }}</div>
+
+                <div class="results-container"><br><b>CAPS found in Allele 1:</b>
+                    {% if natural_rs_s1_r_final %} {% for item in natural_rs_s1_r_final %}
+                         <div class="result-card">
+                            <li>
+                                <i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> -  
+                                {{ seq_1_r[:item[2]-1] }}<strong>{{ item[1] }}</strong>{{ seq_1_r[item[3]:] }}
+                            </li>
+                         </div>
+                         {% endfor %}
+                    {% else %}
+                        <p class="result-card">There is no natural CAPS for Allele 1</p>
+                    {% endif %}
+            </div>
+            <div class="results-container">
+                    <br><b>dCAPS in Alelle 1 with max-mismatches = {{ max_mismatch }}:</b>
+                        {% if lista_final_final_r_s1 %}  {% for item in lista_final_final_r_s1 %}
+                            <div class="result-card">
+                                <li>
+                                    <i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }} <!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br> Diferential Primer: {{ item[7]|safe }}
+                                </li>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="result-card">There is no dCAPS for Alelle 1</p>
+                        {% endif %}
+                    </div>
+                </div>
+                    <!--END-->
+
+            <div class="result-section">
+                    <h2 class="section-title">CAPS and dCAPS in Allele 2 (for the first SNP upstream)</h2>
+                    <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_r_h|safe }}<br>Seq 2: {{ seq_2_r_h|safe }}</div>
+
+                    <div class="results-container"><br><b>CAPS found in Allele 2:</b>
+                    {% if natural_rs_s2_r_final %} {% for item in natural_rs_s2_r_final %}
+                         <div class="result-card">
+                            <li>
+                                <i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> -  
+                                {{ seq_2_r[:item[2]-1] }}<strong>{{ item[1] }}</strong>{{ seq_2_r[item[3]:] }}
+                            </li>
+                         </div>
+                         {% endfor %}
+                    {% else %}
+                        <p class="result-card">There is no natural CAPS for Allele 2</p>
+                    {% endif %}
+                </div>
+
+                    <div class="results-container">
+                        <br><b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
+                        {% if lista_final_final_r_s2 %}  {% for item in lista_final_final_r_s2 %}
+                                <div class="result-card">
+                                     <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="result-card">There is no dCAPS for Allele 2</p>
+                        {% endif %}
+                    </div>
+                </div>
+                    <!-- END-->
+            
+            <div class="result-section">
+                <h2 class="section-title">Generate CAPS in DNA Donor near first SNP upstream</h2>
+                <div class="sequence"><b>Organism selected for codon usage:</b> {{ organism_selected }}</div>
+            <div class="sequence"><b>Seq 2:</b> {{ seq_2_rd }}<br><b>Protein Seq 2:</b> {{ protein_2_rd }}</div>
+                <div class="results-container">
+                <br><b>CAPs in Donor:</b>
+                {% if grs_s2_rd_final_final_cu %}  {% for item in grs_s2_rd_final_final_cu %}
+                        <div class="result-card">
+                             <li><i><strong>{{ item[0] }}</i>: {{ item[6] }}</strong> - Position: {{ item[3] }} - {{ item[4] }}, Codon usage difference: {{ item[1] }} = {{ item[2] }} <br>Donor:{{ item[5]|safe }}<br> </li>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="result-card">It's not possible design a CAPS for Seq 2</p>
+                {% endif %}
+            </div>
+        </div>
+            
+             <div class="result-section">
+                    <h2 class="section-title">Hiding PAM</h2>
+                    <!--
+                    <div class="sequence"><b>gRNA_input_string:</b> {{ gRNA_input_string }}</div>
+                    <div class="sequence"><b>gRNAs:</b> {{ gRNAs }}</div>
+                    -->
+                    <div class="results-container">
+                        <b>gRNAs</b>
+                        {% if gRNAs %}  {% for item in gRNAs %}
+                                <ul>
+                                     <li>{{ item }}</li>
+                                </ul>
+                            {% endfor %}
+                        {% else %}
+                            <p class="result-card">No gRNAs Input</p>
+                        {% endif %}
+                    </div>
+                    <div class="sequence"><b>PAM:</b> 20bp-NGG <br><b>Organism selected for codon usage:</b> {{ organism_selected }}</div><br>
+                    <!--
+                    <div class="sequence"><b>p_s1_r:</b> {{ p_s1_r }}</div>
+                    <div class="sequence"><b>hp_s1_r:</b> {{ hp_s1_r }}</div>
+                    <div class="sequence"><b>hp_s1_r_filter:</b> {{ hp_s1_r_filter }}</div>
+                    <div class="sequence"><b>hp_s1_r_filter_final:</b> {{ hp_s1_r_filter_final }}</div>
+                    <div class="sequence"><b>hp_s1_r_filter_final_cu:</b> {{ hp_s1_r_filter_final_cu }}</div>
+                    -->
+                    
+                    <div class="results-container">
+                        <b>Generate Donor without PAM</b>
+
+                        {% if hp_s1_r_filter_final_cu %}
+                            {% for gRNA, results_list in hp_s1_r_filter_final_cu.items() %}
+
+                                {% for result in results_list %}
+                                    <div class="result-card">
+                                        <p>
+                                            <strong>{{ gRNA[1] }}:</strong> {{ gRNA[0] }}
+                                        </p>
+                                        <p>
+                                            <strong>Codon change:</strong> {{ result['changes'][0] }}
+                                        </p>
+                                            <strong>DNA Donor without PAM:</strong>{{ result['dna']|safe }}
+                                    </div>
+                                {% endfor %}
+
+                            {% endfor %}
+                        {% else %}
+                            <p class="result-card">It's not possible to design a donor without PAM and with the same protein for the gRNAs provided</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+    <!--
             <div class="sequence"><b>rs_s1_r:</b> {{ rs_s1_r }}</div>
             <div class="sequence"><b>rs_s1_r_rc:</b> {{ rs_s1_r_rc }}</div>
 
@@ -482,7 +625,6 @@
             
             <div class="sequence"><b>lista_final_final_r_s1:</b> {{ lista_final_final_r_s1 }}</div>
             
-
 
             <h2 class="section-title">Restriction Sites Seq 2 Right</h2>
 

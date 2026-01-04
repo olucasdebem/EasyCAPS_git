@@ -355,7 +355,7 @@ def get_final_primers_rc(validated_primers, seq):
     return results
 # ^^^ SHOW ^^^
 
-def run_analysis_pipeline(seq_1, seq_2, enzymes, max_mismatch, degenerate_bases, is_rc_analysis=False):
+def run_analysis_pipeline(seq_1, seq_2, enzymes, max_mismatch, degenerate_bases, is_rc_analysis=False, two_snps=False):
             snp_data = get_snp_positions(seq_1, seq_2)
             if snp_data is None:
                return {
@@ -363,7 +363,10 @@ def run_analysis_pipeline(seq_1, seq_2, enzymes, max_mismatch, degenerate_bases,
                 'final_primers_s1': [], 'final_primers_s2': [],
                 'debug_info': {}
             }
-            snp_s1, _, snp_s2, _, _, _, _, _ = snp_data
+            if two_snps:
+                _, _, _, _, snp_s1, _, snp_s2, _ = snp_data
+            else:
+                snp_s1, _, snp_s2, _, _, _, _, _ = snp_data
             rs_s1 = find_rs_new(seq_1, enzymes, max_mismatch)
             rs_s2 = find_rs_new(seq_2, enzymes, max_mismatch)
             rs_filtered_s1 = filter_rs(rs_s1, snp_s1)
@@ -383,13 +386,13 @@ def run_analysis_pipeline(seq_1, seq_2, enzymes, max_mismatch, degenerate_bases,
                 final_primers_s1 = get_final_primers(validated_primers_s1, seq_1)
                 final_primers_s2 = get_final_primers(validated_primers_s2, seq_2)
             results = {
-                # Resultados principais
+                # Main Results
                 'natural_sites_s1': natural_rs_s1,
                 'natural_sites_s2': natural_rs_s2,
                 'final_primers_s1': final_primers_s1,
                 'final_primers_s2': final_primers_s2,
                 
-                # Dados intermediários para depuração ou exibição detalhada
+                # Intermediate data for debugging or detailed display
                 'debug_info': {
                     'snp_s1': snp_s1,
                     'snp_s2': snp_s2,
@@ -450,6 +453,13 @@ def get_donor(seq, enzymes, codon_table, is_rc_analysis=False):
             rs_s2 = find_rs_new(seq, enzymes, max_mismatch=1)
             rs_s2_1m = [item for item in rs_s2 if item[5] == 1]
             grs_s2 = generate_modified_sequences(seq, rs_s2_1m)
+            grs_s2_filtered = []
+            for item in grs_s2:
+                current_new_seq = item[4]
+                diffs = sum(1 for a, b in zip(seq, current_new_seq) if a != b)
+                if diffs <= 1:
+                    grs_s2_filtered.append(item)
+            grs_s2 = grs_s2_filtered
             grs_s2_t = []
             if not is_rc_analysis:
                 for item in grs_s2:
@@ -504,9 +514,9 @@ def get_codon_changes(original_seq, modified_seq_info_list, codon_usage_table):
                         else:
                             difference_str = "(=)"
                     elif original_usage > 0 and modified_usage == 0:
-                        difference_str = "(Uso eliminado)"
+                        difference_str = "(Usage -)"
                     elif original_usage == 0 and modified_usage > 0:
-                        difference_str = "(Uso introduzido)"
+                        difference_str = "(Usage +)"
                 # **CORREÇÃO PRINCIPAL: O resultado é criado e adicionado AQUI**
                 # Cada tupla representa uma única mudança de códon encontrada
                 modified_seq_h = highlight_changes(modified_seq, original_seq)
@@ -552,7 +562,7 @@ def find_pam_for_grnas(target_seq, grna_list):
             if pam_start_0b + len(pam_forward_pattern) <= len(target_seq_upper):
                 actual_pam_seq = target_seq_upper[pam_start_0b : pam_start_0b + len(pam_forward_pattern)]
                 if match_degenerate(actual_pam_seq, pam_forward_pattern):
-                    results.append((grna, grna_pos_0b + 1, pam_forward_pattern, pam_start_0b + 1))
+                    results.append((grna, grna_pos_0b + 1, pam_forward_pattern, pam_start_0b + 1, 'gRNA forward'))
                     found = True
                     break
         if found:
@@ -564,7 +574,7 @@ def find_pam_for_grnas(target_seq, grna_list):
             if pam_start_0b >= 0:
                 actual_pam_seq = target_seq_upper[pam_start_0b : pam_start_0b + len(pam_reverse_pattern)]
                 if match_degenerate(actual_pam_seq, pam_reverse_pattern):
-                    results.append((grna, target_pos_0b + 1, pam_reverse_pattern, pam_start_0b + 1)                    )
+                    results.append((grna, target_pos_0b + 1, pam_reverse_pattern, pam_start_0b + 1, 'gRNA reverse')                    )
                     found = True
                     break
     return results
@@ -586,6 +596,7 @@ def generate_and_translate_synonymous_variations(target_seq, gRNA_list, codon_ta
         gRNA_sequence = gRNA_info[0]
         pam_pattern = gRNA_info[2]
         pam_start_pos = gRNA_info[3]
+        direction = gRNA_info[4]
         pam_len = len(pam_pattern)
         pam_start_idx = pam_start_pos - 1
         pam_end_idx = pam_start_idx + pam_len - 1
@@ -611,7 +622,7 @@ def generate_and_translate_synonymous_variations(target_seq, gRNA_list, codon_ta
                 if not matches_pam_pattern(new_pam_sequence, pam_pattern):
                     valid_dna_variations.append(generated_seq)
         dna_and_protein_pairs = [{'dna': dna_seq, 'protein': translate(dna_seq, codon_table)} for dna_seq in valid_dna_variations]
-        results_dict[gRNA_sequence] = dna_and_protein_pairs
+        results_dict[gRNA_sequence,direction] = dna_and_protein_pairs
     return results_dict
 
 def filter_by_protein(results_dict, reference_protein):
@@ -671,12 +682,12 @@ def analyze_codon_changes(original_seq, final_filtered_dict, codon_usage_table):
                         else:
                             difference_str = "(=)"
                     elif original_usage > 0 and modified_usage == 0:
-                        difference_str = "(Uso eliminado)"
+                        difference_str = "(Usage -)"
                     elif original_usage == 0 and modified_usage > 0:
-                        difference_str = "(Uso introduzido)"
+                        difference_str = "(Usage +)"
                     change_description = (
-                        f"Posição {i+1}: '{original_codon_dna}' (uso: {original_usage}) -> "
-                        f"'{modified_codon_dna}' (uso: {modified_usage}) = {difference_str}"
+                        f"Position {i+1}: '{original_codon_dna}' (usage: {original_usage}) -> "
+                        f"'{modified_codon_dna}' (usage: {modified_usage}) --> codon change = {difference_str}"
                     )
                     changes_found.append(change_description)
                     modified_seq_h = highlight_changes(modified_seq, original_seq)
@@ -766,8 +777,10 @@ def results():
         seq_2_l_rc = rev_comp(seq_2_l)
         protein_1l = translate(seq_1_l, codon_table)
         protein_2l = translate(seq_2_l, codon_table)
+        seq_1_l_h = highlight_variable_region(seq_1_l, seq_2_l)
+        seq_2_l_h = highlight_variable_region(seq_2_l, seq_1_l)
 
-        analysis_results_l = run_analysis_pipeline(seq_1_l, seq_2_l, selected_enzymes, max_mismatch, degenerate_bases, is_rc_analysis=False)
+        analysis_results_l = run_analysis_pipeline(seq_1_l, seq_2_l, selected_enzymes, max_mismatch, degenerate_bases, is_rc_analysis=False, two_snps=False)
 
         natural_rs_s1_l = analysis_results_l['natural_sites_s1']
         natural_rs_s2_l = analysis_results_l['natural_sites_s2']
@@ -789,7 +802,7 @@ def results():
         validated_primers_l_s1 = analysis_results_l['debug_info']['validated_primers_s1']
         validated_primers_l_s2 = analysis_results_l['debug_info']['validated_primers_s2']
 
-        analysis_results_l_rc = run_analysis_pipeline(seq_1_l_rc, seq_2_l_rc, selected_enzymes_np, max_mismatch, degenerate_bases, is_rc_analysis=True)
+        analysis_results_l_rc = run_analysis_pipeline(seq_1_l_rc, seq_2_l_rc, selected_enzymes_np, max_mismatch, degenerate_bases, is_rc_analysis=True, two_snps=False)
         
         natural_rs_s1_l_rc = analysis_results_l_rc['natural_sites_s1']
         natural_rs_s2_l_rc = analysis_results_l_rc['natural_sites_s2']
@@ -880,7 +893,9 @@ def results():
         hp_s1_l_filter_final_cu = analyze_codon_changes(seq_1_l, hp_s1_l_filter_final, codon_usage)
 
         seq_1_r = ""
+        seq_1_r_h = ""
         seq_2_r = ""
+        seq_2_r_h = ""
         seq_1_r_rc = ""
         seq_2_r_rc = ""
         snp_r_s1 = ""
@@ -913,7 +928,19 @@ def results():
         lista_final_r_s1_rc = ""
         lista_final_r_s2_rc = ""
         lista_final_final_r_s1 = ""
-        lista_final_final_r_s2 = ""         
+        lista_final_final_r_s2 = ""
+        seq_2_rd = "",
+        protein_2_rd = "",
+        grs_s2_rd_final_final_cu = "",
+        hp_s1_r_filter_final_cu = "",
+        natural_rs_s1_r_final = "",
+        natural_rs_s2_r_final = "",
+        p_s1_r = "",
+        hp_s1_r = "",
+        hp_s1_r_filter = "",
+        hp_s1_r_filter_final = "",
+
+
 
 
         # --- Block 3R: Main Algorithm for CAPS and dCAPS  ---
@@ -922,10 +949,13 @@ def results():
             seq_2_r = select_nucleotides_around(input_seq_2, snp_right_s1 , 9)
             seq_1_r_rc = rev_comp(seq_1_r)
             seq_2_r_rc = rev_comp(seq_2_r)
-            protein_rl = translate(seq_1_r, codon_table)
-            protein_2l = translate(seq_2_r, codon_table)
+            protein_1r = translate(seq_1_r, codon_table)
+            protein_2r = translate(seq_2_r, codon_table)
+            seq_1_r_h = highlight_variable_region(seq_1_r, seq_2_r)
+            seq_2_r_h = highlight_variable_region(seq_2_r, seq_1_r)
 
-            analysis_results_r = run_analysis_pipeline(seq_1_r, seq_2_r, selected_enzymes, max_mismatch, degenerate_bases, is_rc_analysis=False)
+            analysis_results_r = run_analysis_pipeline(seq_1_r, seq_2_r, selected_enzymes, max_mismatch, degenerate_bases, is_rc_analysis=False, two_snps=True)
+
 
             natural_rs_s1_r = analysis_results_r['natural_sites_s1']
             natural_rs_s2_r = analysis_results_r['natural_sites_s2']
@@ -947,7 +977,7 @@ def results():
             validated_primers_r_s1 = analysis_results_r['debug_info']['validated_primers_s1']
             validated_primers_r_s2 = analysis_results_r['debug_info']['validated_primers_s2']
 
-            analysis_results_r_rc = run_analysis_pipeline(seq_1_r_rc, seq_2_r_rc, selected_enzymes_np, max_mismatch, degenerate_bases, is_rc_analysis=True)
+            analysis_results_r_rc = run_analysis_pipeline(seq_1_r_rc, seq_2_r_rc, selected_enzymes_np, max_mismatch, degenerate_bases, is_rc_analysis=True, two_snps=True)
         
             natural_rs_s1_r_rc = analysis_results_r_rc['natural_sites_s1']
             natural_rs_s2_r_rc = analysis_results_r_rc['natural_sites_s2']
@@ -1002,13 +1032,20 @@ def results():
 
 
             # --- Block 5R: Hiding PAM  ---
+            gRNA_input_string_raw = request.form.get('gRNAs', 'CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA').upper().replace(" ", "")
+            gRNA_input_string = bleach.clean(gRNA_input_string_raw)
+            
+            if not re.fullmatch(r"[ATCG,]+", gRNA_input_string):
+                return jsonify({"error": "gRNAs must contain only A, T, C or G."}), 400
+            if len(gRNA_input_string) > 220:
+                return jsonify({"error": "Too much sequences. Max = 10."}), 400
+
+            gRNAs = [g.strip().upper() for g in gRNA_input_string.split(',')]
             p_s1_r = find_pam_for_grnas(seq_1_r, gRNAs)
             hp_s1_r = generate_and_translate_synonymous_variations(seq_1_r, p_s1_r, codon_table)
             hp_s1_r_filter = filter_by_protein(hp_s1_r, protein_1r)
             hp_s1_r_filter_final = count_and_sort_modifications(seq_1_r, hp_s1_r_filter)
             hp_s1_r_filter_final_cu = analyze_codon_changes(seq_1_r, hp_s1_r_filter_final, codon_usage)
-
-
 
             # --- END ---
             
@@ -1038,13 +1075,17 @@ def results():
                             snp_right_s2_rc = snp_right_s2_rc,
                             br2_rc = br2_rc,
                             seq_1_l = seq_1_l,
+                            seq_1_l_h = seq_1_l_h,
                             seq_2_l = seq_2_l,
+                            seq_2_l_h = seq_2_l_h,
                             seq_1_l_rc = seq_1_l_rc,
                             seq_2_l_rc = seq_2_l_rc,
                             snp_l_s1 = snp_l_s1,
                             snp_l_s2 = snp_l_s2,
                             seq_1_r = seq_1_r,
+                            seq_1_r_h = seq_1_r_h,
                             seq_2_r = seq_2_r,
+                            seq_2_r_h = seq_2_r_h,
                             seq_1_r_rc = seq_1_r_rc,
                             seq_2_r_rc = seq_2_r_rc,
                             snp_r_s1 = snp_r_s1,
@@ -1085,6 +1126,19 @@ def results():
                             lista_final_l_s2_rc = lista_final_l_s2_rc,
                             lista_final_final_l_s1 = lista_final_final_l_s1,
                             lista_final_final_l_s2 = lista_final_final_l_s2,
+                            
+                            natural_rs_s1_r_final = natural_rs_s1_r_final,
+                            natural_rs_s2_r_final = natural_rs_s2_r_final,
+                            seq_2_rd = seq_2_rd,
+                            protein_2_rd = protein_2_rd,
+                            grs_s2_rd_final_final_cu = grs_s2_rd_final_final_cu,
+                            hp_s1_r_filter_final_cu = hp_s1_r_filter_final_cu,
+                            p_s1_r = p_s1_r,
+                            hp_s1_r = hp_s1_r,
+                            hp_s1_r_filter = hp_s1_r_filter,
+                            hp_s1_r_filter_final = hp_s1_r_filter_final,
+
+
                             rs_s1_r = rs_s1_r,
                             rs_s2_r = rs_s2_r,
                             rs_s1_r_rc = rs_s1_r_rc,

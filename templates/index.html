@@ -214,7 +214,7 @@
     
     .analysis-section {
         border: 1px solid #d0e3ff;
-        padding: 25px;
+        padding: 15px;
         margin-bottom: 30px;
         border-radius: 8px;
         background-color: #fcfdff;
@@ -229,7 +229,7 @@
 
     /* --- ESTILOS PARA AS SECÇÕES EXPLICATIVAS (DENTRO DO FORMULÁRIO) --- */
     .in-form-explanation {
-        padding: 10px 0 20px 0;
+        padding: 10px 0 0px 0;
     }
     .technique-container {
         display: grid;
@@ -350,17 +350,35 @@
                 <div class="technique-container">
                     <div class="technique-card">
                         <h3>CAPS</h3>
-                        <img src="{{ url_for('static', filename='CAPS_Info.jpg') }}" alt="Diagrama da técnica CAPS">
+                        <img src="{{ url_for('static', filename='CAPS_Info.jpg') }}" alt="
+                        CAPS Technique" style="border:none;">
                         <p>The <strong>CAPS (Cleaved Amplified Polymorphic Sequence)</strong> technique exploits a natural variation in the DNA (a polymorphism) that either creates or destroys a cutting site for a restriction enzyme. If the site is present, the DNA is cut.
                         <br><br>
                         The <strong>EasyCAPS Finder</strong> compares the two alleles you provide, and if any specific CAPS sites are found in either sequence, they will be displayed in the results.</p>
                     </div>
                     <div class="technique-card">
                         <h3>dCAPS</h3>
-                        <img src="{{ url_for('static', filename='dCAPS_Info.png') }}" alt="Diagrama da técnica dCAPS">
+                        <img src="{{ url_for('static', filename='dCAPS_Info.jpg') }}" alt="dCAPS Technique" style="border:none;">
                         <p>The <strong>dCAPS (derived CAPS)</strong> technique intentionally introduces a mismatch in the PCR primer to artificially create a restriction site in only one of the alleles.
                         <br><br>
                         The <strong>EasyCAPS Finder</strong> designs potential dCAPS primers with 1, 2, or 3 mismatches that allow for differentiation between the alleles.</p>
+                    </div>
+                </div>
+                <div class="in-form-explanation">
+                    <div class="technique-container">
+                        <div class="technique-card">
+                            <h3>Generate CAPS in Donor (Silent Mutations)</h3>
+                            <p>The <strong> Generate CAPS in Donor</strong> feature introduces synonymous (silent) mutations into the donor sequence to artificially create a restriction site, without altering the final amino acid sequence of the protein.
+                            <br><br>
+                            The <strong>EasyCAPS Finder</strong> analyzes the sequence for nucleotide substitutions that generate new cutting sites, ensuring that protein translation remains intact. Additionally, the tool calculates the difference in codon usage for the selected organism, helping to avoid the use of rare codons that could impair gene expression.</p>
+                        </div>
+                        <div class="technique-card">
+                            <h3>Codon Usage Analysis</h3>
+                            <img src="{{ url_for('static', filename='codon_usage.jpg') }}" alt="Codon Usage" style="border:none;">
+                            <p>Although different codons can code for the same amino acid (synonymous mutations), organisms exhibit a natural preference for certain codons over others. This predisposition, known as Codon Usage Bias, directly impacts translation efficiency, accuracy, and proper protein folding.
+                            <br><br>
+                            The <strong>EasyCAPS Finder</strong> evaluates the biological impact of suggested mutations by comparing the usage frequency of the original codon versus the new codon in the selected organism (e.g., S. cerevisiae). The results quantify this difference (e.g., +1.4x or -2.3x), alerting the researcher if the creation of a restriction site introduces a rare codon that could impair gene expression.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -394,24 +412,21 @@
 
         </fieldset>
         
-        <!-- === EXPLICAÇÃO PARA DIRECT CRISPR (MODIFICADO) === -->
+        <!-- === EXPLICAÇÃO PARA DIRECT CRISPR === -->
         <fieldset class="analysis-section">
             <legend>How does it work?</legend>
         <div class="in-form-explanation">
             <div class="technique-container">
                 <div class="technique-card">
                     <h3>Two-Step Strategy</h3>
-                    <img src="{{ url_for('static', filename='Two-Step.jpg') }}" alt="Diagrama da técnica  two-step">
+                    <img src="{{ url_for('static', filename='Two-Step.jpg') }}" alt="Two-step CRISPR" style="border:none;">
                     <p>Allele conversion is performed in two sequential transformations to prevent re-cleavage of the edited allele. First, gRNA1 directs the insertion of a donor cassette that replaces the original target site with a new recognition sequence for gRNA2. In a second step, gRNA2 is used to introduce the desired variant, generating allele 2.</p>
                 </div>
                 <div class="technique-card">
                     <h3>Direct CRISPR Strategy</h3>
-                    <img src="{{ url_for('static', filename='Direct_CRISPR.jpg') }}" alt="Diagrama da técnica dCAPS">
+                    <img src="{{ url_for('static', filename='Direct_CRISPR.jpg') }}" alt="Direct CRISPR" style="border:none;">
                     <p>The replacement of alleles is achieved in a single transformation step. A repair template carries a silent base mutation within the protospacer adjacent motif (PAM). This strategy masks the Cas9 recognition site in the new allele, preventing recurrent cleavage and ensuring the efficiency of the edit without altering the protein sequence.</p>
                     <p>The <strong>EasyCAPS Finder</strong> translates allele 1 and identifies the PAMs related to the gRNAs provided by the user. The tool delivers modifications in the PAM sequence that do not alter the original protein, allowing for direct CRISPR.</p>
-
-
-
                 </div>
             </div>
         </div>
@@ -503,392 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // --- PARTE 4: AÇÕES INICIAIS ---
-    selectAllCheckbox.checked = true;
-    enzymeCheckboxes.forEach(cb => cb.checked = true);
-    searchInput.focus();
-});
-</script>
-</html>
-
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ url_for('static', filename='favicon2.png') }}">
-    <title>EasyCAPS Finder</title>
-   <!--<style>
-    body {
-        font-family: 'Segoe UI', Arial, sans-serif;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 25px;
-        line-height: 1.6;
-        color: #333;
-    }
-    h1 {
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    .dna-form {
-        background-color: #f9f9f9;
-        padding: 25px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .sequence-group {
-        margin-bottom: 25px;
-    }
-    .input_seq {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        min-height: 10px;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        resize: vertical;
-    }
-     textarea {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        min-height: 10px;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        resize: vertical;
-    }
-    .enzyme-group {
-        margin: 25px 0;
-        padding: 20px;
-        background-color: #f0f7ff;
-        border-radius: 8px;
-        border: 1px solid #d0e3ff;
-    }
-    .enzyme-options {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 12px;
-        max-height: 500px;
-        overflow-y: auto;
-        padding: 10px;
-    }
-    .enzyme-option {
-        display: flex;
-        align-items: center;
-        background-color: white;
-        padding: 10px 15px;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        transition: all 0.2s ease;
-    }
-    .enzyme-option:hover {
-        background-color: #f5faff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .enzyme-option input[type="checkbox"] {
-        margin-right: 12px;
-        transform: scale(1.2);
-    }
-    .enzyme-option label {
-        cursor: pointer;
-        font-size: 14px;
-        flex-grow: 1;
-    }
-    .enzyme-group h3 {
-        margin-top: 0;
-        color: #2c3e50;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #d0e3ff;
-    }
-    button {
-        background-color: #3498db;
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        display: block;
-        margin: 25px auto 0;
-        transition: background-color 0.3s;
-    }
-    button:hover {
-        background-color: #2980b9;
-    }
-    option {
-      font-style: italic;
-    }
-    .example {
-        font-size: 13px;
-        color: #7f8c8d;
-        margin-top: 8px;
-        font-style: italic;
-    }
-    /* Scrollbar styling for enzyme options */
-    .enzyme-options::-webkit-scrollbar {
-        width: 8px;
-    }
-    .enzyme-options::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-    .enzyme-options::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 4px;
-    }
-    .enzyme-options::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-    }
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .enzyme-options {
-            grid-template-columns: 1fr;
-        }
-        body {
-            padding: 15px;
-        }
-        .dna-form {
-            padding: 15px;
-        }
-    }
-     .search-container {
-        margin-bottom: 20px;
-        position: relative;
-        width: 95%;
-    }
-    #enzymeSearch {
-        width: 100%;
-        padding: 12px 15px;
-        padding-left: 40px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #7f8c8d;
-    }
-    .no-results {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 20px;
-        color: #7f8c8d;
-        font-style: italic;
-    }
-    .highlight {
-        background-color: #fffde7;
-        font-weight: bold;
-        padding: 0 2px;
-    }
-    /* Estilos para o Overlay de Carregamento */
-    #loading-overlay {
-        position: fixed; /* Cobre a tela inteira, mesmo com scroll */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.8); /* Fundo branco semitransparente */
-        display: none; /* COMEÇA ESCONDIDO */
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        z-index: 9999; /* Garante que fique por cima de tudo */
-        text-align: center;
-        color: #2c3e50;
-        font-size: 1.2em;
-    }
-
-    .spinner {
-        border: 8px solid #f3f3f3; /* Cinza claro */
-        border-top: 8px solid #3498db; /* Azul do seu botão */
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        animation: spin 1s linear infinite;
-        margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-</style>-->
-</head>
-<body>
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <p>Analisando sequências... Por favor, aguarde.</p>
-        <p>Isso pode levar alguns segundos.</p>
-    </div>
-    
-    <h1>EasyCAPS Finder</h1>
-
-<div class="dna-form">
-    <form action="/results" method="post">
-        <!-- Campos de sequência de DNA (mantidos iguais) -->
-        <div class="sequence-group">
-            <label for="input_seq_1">DNA sequence 1:</label><br>
-            <input class="input_seq" id="input_seq_1" name="input_seq_1" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
-        </div>
-        
-        <div class="sequence-group">
-            <label for="input_seq_2">DNA sequence 2:</label><br>
-            <input class="input_seq" id="input_seq_2" name="input_seq_2" value="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
-        </div>
-        <div>
-            <label for="max_mismatch">Max mismatches</label><br>
-            <select class="input_seq" name="max_mismatch" id="max_mismatch">
-                <option value="1">1</option>
-                <option value="2" selected>2</option>
-                <option value="3">3</option>
-            </select>
-        </div>
-        <div class="enzyme-group">
-            <h3>Select the restriction enzymes</h3>
-            <div class="search-container">
-                <i class="search-icon">🔍</i>
-                <input type="text" id="enzymeSearch" placeholder="Search enzymes by name or sequence...">
-            </div>
-
-            <!-- Checkbox de selecionar todas -->
-            <div class="enzyme-option">
-                <input type="checkbox" id="selectAllEnzymes">
-                <label for="selectAllEnzymes" ><strong>Select all</strong></label>
-            </div>
-
-            <!-- Container das opções reais -->
-            <div class="enzyme-options" id="enzymeOptionsContainer">
-                {% for name, data in enzymes.items() %}
-                <div class="enzyme-option">
-                    <input type="checkbox" id="{{ name.lower() }}" name="enzymes" value="{{ name }}"
-                           {% if name in selected_enzymes %}checked{% endif %}>
-                    <label for="{{ name.lower() }}">{{ name }} ({{ data[0] }}, {{ data[1] }}/{{ data[2] }})</label>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div>
-            <label for="organism">Codon usage:</label><br>
-            <select class="input_seq" name="organism" id="organism">
-                
-                {% for value, display_text in organisms.items() %}
-                    <option value="{{ value }}" {% if value == selected_organism %}selected{% endif %}>
-                        {{ display_text }}
-                    </option>
-                {% endfor %}
-
-            </select>
-        </div>
-
-        <div>
-            <label for="organism">PAM pattern</label><br>
-                <select class="input_seq" name="PAM" id="PAM">
-                    <option value="NGG">20bp-NGG</option>
-                </select>
-        </div>
-        <div class="sequence-group">
-            <label for="gRNAs">gRNAs (separated by commas):</label><br>
-            <input class="input_seq" id="gRNAs" name="gRNAs" value="CAAATGTGGAGAATCCTTAT, AAATGTGGAGAATCCTTATT, CAAACATGCCAACCTTAGAC, GTTGGGTACCGGTCTAAGGT, TTGGGTTGGGTACCGGTCTA"></input>
-        </div>
-
-        <button type="submit">Analyse</button>
-    </form>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- PARTE 1: SELEÇÃO DOS ELEMENTOS ---
-    // Pegamos todos os elementos que vamos usar uma única vez, no início.
-    const dnaForm = document.querySelector('.dna-form form');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const enzymeOptionsContainer = document.getElementById('enzymeOptionsContainer');
-    const searchInput = document.getElementById('enzymeSearch');
-    const enzymeOptions = Array.from(enzymeOptionsContainer.querySelectorAll('.enzyme-option'));
-    const enzymeCheckboxes = Array.from(enzymeOptionsContainer.querySelectorAll('input[type="checkbox"]'));
-    const selectAllCheckbox = document.getElementById('selectAllEnzymes');
-
-    // --- PARTE 2: DEFINIÇÃO DAS FUNÇÕES AUXILIARES ---
-    // Definimos as funções que serão usadas pelos eventos.
-    function highlightText(text, searchTerm) {
-        if (!searchTerm) return text;
-        const regex = new RegExp(searchTerm, 'gi');
-        return text.replace(regex, match => `<span class="highlight">${match}</span>`);
-    }
-
-    function filterEnzymes(searchTerm) {
-        searchTerm = searchTerm.toLowerCase();
-        let hasResults = false;
-        
-        enzymeOptions.forEach(option => {
-            const label = option.querySelector('label');
-            const originalText = label.dataset.originalText || label.textContent;
-            label.dataset.originalText = originalText;
-            
-            const matches = originalText.toLowerCase().includes(searchTerm);
-            option.style.display = matches ? 'flex' : 'none';
-            
-            if (matches) {
-                hasResults = true;
-                label.innerHTML = highlightText(originalText, searchTerm);
-            }
-        });
-
-        const noResults = document.getElementById('noResultsMessage');
-        if (!hasResults && searchTerm) {
-            if (!noResults) {
-                const msg = document.createElement('div');
-                msg.id = 'noResultsMessage';
-                msg.className = 'no-results';
-                msg.textContent = 'Nenhuma enzima encontrada. Tente outro termo.';
-                enzymeOptionsContainer.appendChild(msg);
-            }
-        } else if (noResults) {
-            noResults.remove();
-        }
-    }
-
-    // --- PARTE 3: CONFIGURAÇÃO DOS EVENTOS ---
-    // Adicionamos todos os 'escutadores' de eventos, cada um com sua responsabilidade.
-    
-    // Evento para mostrar o LOADING ao enviar o formulário
-    dnaForm.addEventListener('submit', function() {
-        loadingOverlay.style.display = 'flex';
-    });
-
-    // Evento para esconder o LOADING ao usar o botão "Voltar" do navegador
-    window.addEventListener('pageshow', function(event) {
-        loadingOverlay.style.display = 'none';
-    });
-    
-    // Eventos de interatividade das ENZIMAS
-    selectAllCheckbox.addEventListener('change', function() {
-        enzymeCheckboxes.forEach(cb => cb.checked = this.checked);
-    });
-
-    enzymeCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            selectAllCheckbox.checked = enzymeCheckboxes.every(c => c.checked);
-        });
-    });
-
-    searchInput.addEventListener('input', function() {
-        filterEnzymes(this.value);
-    });
-    
-    // --- PARTE 4: AÇÕES INICIAIS ---
-    // Código que deve rodar uma única vez no carregamento da página.
     selectAllCheckbox.checked = true;
     enzymeCheckboxes.forEach(cb => cb.checked = true);
     searchInput.focus();
