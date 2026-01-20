@@ -269,7 +269,7 @@
         <div class="sequence"><b>natural_rs_s1_l:</b> {{ natural_rs_s1_l }}</div>
         <div class="sequence"><b>natural_rs_s1_l_final:</b> {{ natural_rs_s1_l_final }}</div>
 -->
-        <div class="results-container"><br><b>CAPS found in Allele 1:</b>
+        <div class="results-container"><br><b>CAPS in Allele 1:</b>
         {% if natural_rs_s1_l_final %} {% for item in natural_rs_s1_l_final %}
              <div class="result-card">
                 <li>
@@ -353,7 +353,7 @@
             <br><b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
             {% if lista_final_final_l_s2 %}  {% for item in lista_final_final_l_s2 %}
                     <div class="result-card">
-                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
+                         <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br> Diferential Primer: {{ item[7]|safe }} </li>
                     </div>
                 {% endfor %}
             {% else %}
@@ -477,7 +477,7 @@
                 <h2 class="section-title">CAPS and dCAPS in Allele 1 (for the first SNP downstream)</h2>
                 <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_r_h|safe }}<br>Seq 2: {{ seq_2_r_h|safe }}</div>
 
-                <div class="results-container"><br><b>CAPS found in Allele 1:</b>
+                <div class="results-container"><br><b>CAPS in Allele 1:</b>
                     {% if natural_rs_s1_r_final %} {% for item in natural_rs_s1_r_final %}
                          <div class="result-card">
                             <li>
@@ -510,7 +510,7 @@
                     <h2 class="section-title">CAPS and dCAPS in Allele 2 (for the first SNP upstream)</h2>
                     <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_r_h|safe }}<br>Seq 2: {{ seq_2_r_h|safe }}</div>
 
-                    <div class="results-container"><br><b>CAPS found in Allele 2:</b>
+                    <div class="results-container"><br><b>CAPS in Allele 2:</b>
                     {% if natural_rs_s2_r_final %} {% for item in natural_rs_s2_r_final %}
                          <div class="result-card">
                             <li>
@@ -528,7 +528,7 @@
                         <br><b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
                         {% if lista_final_final_r_s2 %}  {% for item in lista_final_final_r_s2 %}
                                 <div class="result-card">
-                                     <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br>{{ item[7]|safe }} </li>
+                                     <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br> Diferential Primer: {{ item[7]|safe }} </li>
                                 </div>
                             {% endfor %}
                         {% else %}

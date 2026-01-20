@@ -13,6 +13,8 @@ from flask import Flask, request, render_template, jsonify, redirect, url_for, s
 
 # --- Login
 app = Flask(__name__)
+
+'''
 app.secret_key = os.environ.get('SECRET_KEY', 'uma-chave-padrao-para-testes-locais')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin_test_2')
 
@@ -43,7 +45,7 @@ def login():
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
-
+'''
 
 VALID_PAMS = {"NGG"}
 
@@ -704,7 +706,7 @@ def analyze_codon_changes(original_seq, final_filtered_dict, codon_usage_table):
 
 
 @app.route('/')
-@login_required
+#@login_required
 def index():
     return render_template('index.html', enzymes=enzymes, organisms=organism_names,  selected_organism='S. cerevisiae')
 
@@ -712,7 +714,7 @@ def index():
 
 
 @app.route('/results', methods=['POST'])
-@login_required
+#@login_required
 def results():
     try:
         # --- Block 1: Input Sequences info ---
