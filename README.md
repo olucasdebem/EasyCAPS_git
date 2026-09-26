@@ -1,6 +1,6 @@
 # EasyCAPS 🧬
 
-**A web tool for restriction-based genotyping and rational CRISPR-Cas9 donor design**
+**The EasyCAPS web tool enables restriction enzyme genotyping and donor DNA design for CRISPR/Cas9 genome editing**
 
 🌐 **Access the web application:** [https://easycaps-app.onrender.com/](https://easycaps-app.onrender.com/)
 📄 **Read the preprint:** [bioRxiv](https://doi.org/10.64898/2026.04.17.719238) 
@@ -18,7 +18,7 @@ Tracking Single Nucleotide Polymorphisms (SNPs) following CRISPR-Cas9 genome edi
 ## ✨ Key Features
 
 * **CAPS & dCAPS Identification:** Automatic identification of natural restriction sites (CAPS) and generation of derived sites (dCAPS) based on a dynamic, user-defined restriction enzyme library.
-* **"Hiding PAM" Module:** Designs synonymous mutations to mask the Cas9 recognition site, preventing re-cleavage of the newly edited allele and facilitating direct one-step editing.
+* **"Masking PAM" Module:** Designs synonymous mutations to mask the Cas9 recognition site, preventing re-cleavage of the newly edited allele and facilitating direct one-step editing.
 * **Codon Usage Bias Analysis:** Evaluates all generated synonymous mutations against the target organism's codon usage table, calculating the fold-change between the original and new codon to prevent negative impacts on mRNA stability and translation speed.
 * **Rational Donor Design:** Scans donor sequences to identify positions where single-nucleotide substitutions can create new restriction sites (Silent CAPS) for tracking, without altering the amino acid sequence.
 
