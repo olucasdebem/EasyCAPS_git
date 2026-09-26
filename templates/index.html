@@ -327,12 +327,12 @@
             <legend>CAPS / dCAPS Analysis</legend>
 
             <div class="sequence-group">
-                <label for="input_seq_1">DNA Allele 1:</label><br>
+                <label for="input_seq_1">DNA Wild-type:</label><br>
                 <input class="input_seq" id="input_seq_1" name="input_seq_1" placeholder="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGGTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
             </div>
             
             <div class="sequence-group">
-                <label for="input_seq_2">DNA Allele 2:</label><br>
+                <label for="input_seq_2">DNA Mutant:</label><br>
                 <input class="input_seq" id="input_seq_2" name="input_seq_2" placeholder="AGATGTCAAAAGGCTTGTGACCAAATGTGGAGAATCCTTATTGGGTTGGGTACCGTTCTAAGGTTGGCATGTTTGTATTTCAGATTAACTATTCCAGAA"></input>
             </div>
             <div>
@@ -411,7 +411,7 @@
         </fieldset>
         <!-- === SECÇÃO 2: DIRECT CRISPR === -->
         <fieldset class="analysis-section">
-            <legend>Hinding PAM</legend>
+            <legend>Masking PAM</legend>
 
             <div>
                 <label for="organism">Codon usage:</label><br>
@@ -451,14 +451,14 @@
                     <h3>Direct CRISPR Strategy</h3>
                     <img src="{{ url_for('static', filename='Direct_CRISPR.jpg') }}" alt="Direct CRISPR">
                     <p>The replacement of alleles is achieved in a single transformation step. A repair template carries a silent base mutation within the protospacer adjacent motif (PAM). This strategy masks the Cas9 recognition site in the new allele, preventing recurrent cleavage and ensuring the efficiency of the edit without altering the protein sequence.</p>
-                    <p>The <strong>EasyCAPS Finder</strong> translates allele 1 and identifies the PAMs related to the gRNAs provided by the user. The tool delivers modifications in the PAM sequence that do not alter the original protein, allowing for direct CRISPR.</p>
+                    <p>The <strong>EasyCAPS Finder</strong> translates wild-type sequence and identifies the PAMs related to the gRNAs provided by the user. The tool delivers modifications in the PAM sequence that do not alter the original protein, allowing for direct CRISPR.</p>
                 </div>
             </div>
         </div>
     </fieldset>
     <footer class="my-signature">
     <p>
-        Developed by <a href="https://www.instagram.com/SEU_USUARIO_AQUI" target="_blank" rel="noopener noreferrer">Lucas de Bem</a>
+        Developed by <a href="https://www.instagram.com/olucasdebem" target="_blank" rel="noopener noreferrer">Lucas de Bem</a>
     </p>
 </footer>
     <div class="submit-container-sticky">
