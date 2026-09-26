@@ -197,25 +197,25 @@
         <table class="sequence-table">
             <tbody>
                 <tr>
-                    <td><strong>Input Allele 1:</strong></td>
+                    <td><strong>Input WT:</strong></td>
                     <td class="sequence-mono">{{ input_seq_1_h|safe }}</td>
                 </tr>
-                <tr class="pair-divider">  <td><strong>Input Allele 2:</strong></td>
+                <tr class="pair-divider">  <td><strong>Input MT:</strong></td>
                     <td class="sequence-mono">{{ input_seq_2_h|safe }}</td>
                 </tr>
                 <tr>
-                    <td><strong>Input Alelle 1 Rev-Comp:</strong></td>
+                    <td><strong>Input WT Rev-Comp:</strong></td>
                     <td class="sequence-mono">{{ input_seq_1_rc_h|safe }}</td>
                 </tr>
-                <tr class="pair-divider">  <td><strong>Input Allele 2 Rev-Comp:</strong></td>
+                <tr class="pair-divider">  <td><strong>Input MT Rev-Comp:</strong></td>
                     <td class="sequence-mono">{{ input_seq_2_rc_h|safe }}</td>
                 </tr>
                 <tr>
-                    <td><strong>Protein 1:</strong></td>
+                    <td><strong>Protein WT:</strong></td>
                     <td class="sequence-mono">{{ protein_1_h|safe }}</td>
                 </tr>
                 <tr>
-                    <td><strong>Protein 2:</strong></td>
+                    <td><strong>Protein MT:</strong></td>
                     <td class="sequence-mono">{{ protein_2_h|safe }}</td>
                 </tr>
             </tbody>
@@ -257,7 +257,7 @@
 
     <div class="result-section" style="background-color: #e8f5e9;">
         <div class="result-section">
-        <h2 class="section-title">CAPS and dCAPS in Allele 1 (for the first SNP upstream)</h2>
+        <h2 class="section-title">CAPS and dCAPS in WT (for the first SNP upstream)</h2>
         <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_l_h|safe }}<br>Seq 2: {{ seq_2_l_h|safe }}</div>
 
 <!--
@@ -269,7 +269,7 @@
         <div class="sequence"><b>natural_rs_s1_l:</b> {{ natural_rs_s1_l }}</div>
         <div class="sequence"><b>natural_rs_s1_l_final:</b> {{ natural_rs_s1_l_final }}</div>
 -->
-        <div class="results-container"><br><b>CAPS in Allele 1:</b>
+        <div class="results-container"><br><b>CAPS in WT:</b>
         {% if natural_rs_s1_l_final %} {% for item in natural_rs_s1_l_final %}
              <div class="result-card">
                 <li>
@@ -279,7 +279,7 @@
              </div>
              {% endfor %}
         {% else %}
-            <p class="result-card">There is no natural CAPS for Allele 1</p>
+            <p class="result-card">There is no natural CAPS for WT</p>
         {% endif %}
         </div>
 <!--
@@ -312,7 +312,7 @@
     </div>
 
     <div class="result-section">
-        <h2 class="section-title">CAPS and dCAPS in Allele 2 (for the first SNP upstream)</h2>
+        <h2 class="section-title">CAPS and dCAPS in MT (for the first SNP upstream)</h2>
         <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_l_h|safe }}<br>Seq 2: {{ seq_2_l_h|safe }}</div>
 <!--
         <div class="sequence"><b>rs_s2_l:</b> {{ rs_s2_l }}</div>
@@ -323,7 +323,7 @@
         <div class="sequence"><b>natural_rs_s2_l:</b> {{ natural_rs_s2_l }}</div>
         <div class="sequence"><b>natural_rs_s2_l_final:</b> {{ natural_rs_s2_l_final }}</div>
 -->
-        <div class="results-container"><br><b>CAPS in Allele 2:</b>
+        <div class="results-container"><br><b>CAPS in MT:</b>
         {% if natural_rs_s2_l_final %} {% for item in natural_rs_s2_l_final %}
              <div class="result-card">
                 <li>
@@ -333,7 +333,7 @@
              </div>
              {% endfor %}
         {% else %}
-            <p class="result-card">There is no CAPS for Allele 2</p>
+            <p class="result-card">There is no CAPS for MT</p>
         {% endif %}
         </div>
 <!--
@@ -350,14 +350,14 @@
         <div class="sequence"><b>lista_final_final_l_s2:</b> {{ lista_final_final_l_s2 }}</div>
 -->
         <div class="results-container">
-            <br><b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
+            <br><b>dCAPs in MT with max-mismatches = {{ max_mismatch }}:</b>
             {% if lista_final_final_l_s2 %}  {% for item in lista_final_final_l_s2 %}
                     <div class="result-card">
                          <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br> Diferential Primer: {{ item[7]|safe }} </li>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="result-card">There is no dCAPS for Allele 2</p>
+                <p class="result-card">There is no dCAPS for MT</p>
             {% endif %}
         </div>
         <!-- END-->
@@ -405,7 +405,7 @@
     </div>
 
     <div class="result-section">
-        <h2 class="section-title">Hiding PAM</h2>
+        <h2 class="section-title">Masking PAM</h2>
         <!--
         <div class="sequence"><b>gRNA_input_string:</b> {{ gRNA_input_string }}</div>
         <div class="sequence"><b>gRNAs:</b> {{ gRNAs }}</div>
@@ -474,10 +474,10 @@
             <h2 class="section-title">Restriction Sites Seq 1 Right</h2>
     -->
             <div class="result-section">
-                <h2 class="section-title">CAPS and dCAPS in Allele 1 (for the first SNP downstream)</h2>
+                <h2 class="section-title">CAPS and dCAPS in WT (for the first SNP downstream)</h2>
                 <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_r_h|safe }}<br>Seq 2: {{ seq_2_r_h|safe }}</div>
 
-                <div class="results-container"><br><b>CAPS in Allele 1:</b>
+                <div class="results-container"><br><b>CAPS in WT:</b>
                     {% if natural_rs_s1_r_final %} {% for item in natural_rs_s1_r_final %}
                          <div class="result-card">
                             <li>
@@ -487,7 +487,7 @@
                          </div>
                          {% endfor %}
                     {% else %}
-                        <p class="result-card">There is no natural CAPS for Allele 1</p>
+                        <p class="result-card">There is no natural CAPS for WT</p>
                     {% endif %}
             </div>
             <div class="results-container">
@@ -507,10 +507,10 @@
                     <!--END-->
 
             <div class="result-section">
-                    <h2 class="section-title">CAPS and dCAPS in Allele 2 (for the first SNP upstream)</h2>
+                    <h2 class="section-title">CAPS and dCAPS in MT (for the first SNP upstream)</h2>
                     <div class="sequence"><b>Sequences analysed:</b><br>Seq 1: {{ seq_1_r_h|safe }}<br>Seq 2: {{ seq_2_r_h|safe }}</div>
 
-                    <div class="results-container"><br><b>CAPS in Allele 2:</b>
+                    <div class="results-container"><br><b>CAPS in MT:</b>
                     {% if natural_rs_s2_r_final %} {% for item in natural_rs_s2_r_final %}
                          <div class="result-card">
                             <li>
@@ -520,19 +520,19 @@
                          </div>
                          {% endfor %}
                     {% else %}
-                        <p class="result-card">There is no natural CAPS for Allele 2</p>
+                        <p class="result-card">There is no natural CAPS for MT</p>
                     {% endif %}
                 </div>
 
                     <div class="results-container">
-                        <br><b>dCAPs in Allele 2 with max-mismatches = {{ max_mismatch }}:</b>
+                        <br><b>dCAPs in MT with max-mismatches = {{ max_mismatch }}:</b>
                         {% if lista_final_final_r_s2 %}  {% for item in lista_final_final_r_s2 %}
                                 <div class="result-card">
                                      <li><i><strong>{{ item[0] }}:</i> {{ item[1] }}</strong> {{ item[5] }}<!-- - Position: {{ item[2] }} - {{ item[3] }}--> <br> Diferential Primer: {{ item[7]|safe }} </li>
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p class="result-card">There is no dCAPS for Allele 2</p>
+                            <p class="result-card">There is no dCAPS for MT</p>
                         {% endif %}
                     </div>
                 </div>
@@ -556,7 +556,7 @@
         </div>
             
              <div class="result-section">
-                    <h2 class="section-title">Hiding PAM</h2>
+                    <h2 class="section-title">Masking PAM</h2>
                     <!--
                     <div class="sequence"><b>gRNA_input_string:</b> {{ gRNA_input_string }}</div>
                     <div class="sequence"><b>gRNAs:</b> {{ gRNAs }}</div>
